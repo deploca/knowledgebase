@@ -1,20 +1,44 @@
 export const state = {
-  items: [
-    { id: 1, title: 'نصب لینوکس اوبونتو', createdAt: 'یک سال پیش', updatedAt: 'دیروز' },
-    { id: 2, title: 'دستورات مدیریتی در لینوکس', createdAt: 'یک سال پیش', updatedAt: 'دیروز' },
-  ],
-  details: {
-    id: 1,
-    title: 'نصب لینوکس اوبونتو',
-    createdAt: 'یک سال پیش',
-    updatedAt: 'دیروز',
-    tags: [],
-    category: { id: 1, title: 'سیستم عامل لینوکس' },
-    contents: `## نصب از طریق فایل ISO`
-  }
+  items: [],
+  details: null
 }
 
 export const getters = {
   items: state => state.items,
   details: state => state.details,
+}
+
+export const actions = {
+  loadThreads({ commit }, categoryId) {
+    return new Promise((resolve, reject) => {
+      this.$api.get('/threads?category_id=' + categoryId).then(r => {
+        commit('set_items', r.data)
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
+  loadSingleThread({ commit }, id) {
+    return new Promise((resolve, reject) => {
+      this.$api.get('/threads/' + id).then(r => {
+        commit('set_details', r.data)
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
+  newThread({ dispatch }, data) {
+    return new Promise((resolve, reject) => {
+      this.$api.post('/threads', data).then(r => {
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
+}
+
+export const mutations = {
+  set_items(state, data) {
+    state.items = data
+  },
+  set_details(state, data) {
+    state.details = data
+  }
 }

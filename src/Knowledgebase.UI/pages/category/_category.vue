@@ -1,17 +1,26 @@
 <template>
   <div>
-    <div>
-      <b-button variant="primary" class="mb-2" to="/thread/new">
-        <b-icon icon="plus"></b-icon> مطلب جدید
-      </b-button>
-      <b-button variant="primary" class="mb-2" to="/category/new">
-        <b-icon icon="plus"></b-icon> زیر دسته جدید
-      </b-button>
+    <div class="d-flex justify-content-between">
+      <span>
+        <b-button variant="primary" class="mb-2" :to="`/thread/new?cid=${categoryId}`">
+          <b-icon icon="plus"></b-icon> مطلب جدید
+        </b-button>
+        <b-button variant="primary" class="mb-2" @click="uiNewCategory">
+          <b-icon icon="plus"></b-icon> زیر دسته جدید
+        </b-button>
+      </span>
+      <span>
+        <b-button variant="warning" class="mb-2" @click="gotoParentCategory">
+          <b-icon icon="arrow-left-circle"></b-icon> بازگشت
+        </b-button>
+      </span>
     </div>
-    <div class="py-2">زیر دسته ها</div>
-    <b-list-group>
-      <CategoryItem v-for="i in categories" :key="i.id" :data="i" />
-    </b-list-group>
+    <div v-if="subCategories.length > 0">
+      <div class="py-2">زیر دسته ها</div>
+      <b-list-group>
+        <CategoryItem v-for="i in subCategories" :key="i.id" :data="i" />
+      </b-list-group>
+    </div>
 
     <div class="pt-4 pb-2">مطالب</div>
     <b-list-group>
@@ -21,15 +30,48 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { BIcon, BIconPlus } from 'bootstrap-vue'
-export default {
-  components: { BIcon, BIconPlus },
-  computed: {
-    ...mapGetters({
-      categories: 'category/items',
-      threads: 'thread/items'
-    })
+  import { mapGetters, mapActions } from 'vuex'
+  import { BIcon, BIconPlus, BIconArrowLeftCircle } from 'bootstrap-vue'
+  export default {
+    components: { BIcon, BIconPlus, BIconArrowLeftCircle },
+    computed: {
+      ...mapGetters({
+        categories: 'category/items',
+        threads: 'thread/items',
+      }),
+      categoryId() {
+        return this.$route.params.category;
+      },
+      category() {
+        return this.categories.filter(x => x.id == this.categoryId)[0]
+      },
+      subCategories() {
+        return this.categories.filter(x => x.parentCategoryId == this.categoryId)
+      }
+    },
+    mounted() {
+      this.loadThreads(this.categoryId)
+    },
+    methods: {
+      ...mapActions({
+        loadThreads: 'thread/loadThreads',
+        newCategory: 'category/newCategory',
+      }),
+      uiNewCategory() {
+        var title = window.prompt('عنوان دسته را تایپ نمایید:');
+        if (title && title.length > 0) {
+          var data = { parentCategoryId: this.categoryId, title };
+          this.newCategory(data).then(r => {
+            this.$router.push(`/category/${r}`)
+          })
+        }
+      },
+      gotoParentCategory() {
+        if (this.category.parentCategoryId)
+          this.$router.push(`/category/${this.category.parentCategoryId}`)
+        else
+          this.$router.push('/')
+      }
+    }
   }
-}
 </script>

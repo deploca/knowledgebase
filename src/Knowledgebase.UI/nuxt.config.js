@@ -38,6 +38,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/api' },
     { src: '~/plugins/components/index' },
   ],
   /*

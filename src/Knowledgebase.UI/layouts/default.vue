@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHeader />
-    <b-container>
+    <b-container fluid="lg">
       <b-row>
         <b-col>
           <nuxt />
@@ -14,3 +14,15 @@
     <AppFooter />
   </div>
 </template>
+
+<script>import { mapActions } from 'vuex'
+  export default {
+    mounted() {
+      this.loadCategories();
+    },
+    methods: {
+      ...mapActions({
+        loadCategories: 'category/loadCategories',
+      })
+    }
+  }</script>

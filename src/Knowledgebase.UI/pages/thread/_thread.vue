@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div v-if="threadDetails">
     <div class="d-flex justify-content-between">
-      <h3>{{details.title}}</h3>
-      <b-button variant="primary" class="mb-2"
-        @click="$router.push(`/category/${details.category.id}`)">
+      <h3>{{threadDetails.title}}</h3>
+      <b-button variant="warning" class="mb-2"
+                @click="$router.push(`/category/${threadDetails.category.id}`)">
         بازگشت <b-icon icon="arrow-left-circle"></b-icon>
       </b-button>
     </div>
     <hr />
-    <markdown :value="details.contents"/>
+    <markdown :value="threadDetails.contents" />
     <br /><br />
     <h5>بحث و گفتگو</h5><hr />
     <b-media>
@@ -43,14 +43,25 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { BIcon, BIconArrowLeftCircle } from 'bootstrap-vue'
-export default {
-  components: { BIcon, BIconArrowLeftCircle },
-  computed: {
+  import { mapGetters, mapActions } from 'vuex'
+  import { BIcon, BIconArrowLeftCircle } from 'bootstrap-vue'
+  export default {
+    components: { BIcon, BIconArrowLeftCircle },
+    computed: {
       ...mapGetters({
-        details: 'thread/details',
-      })
+        threadDetails: 'thread/details',
+      }),
+      threadId() {
+        return this.$route.params.thread;
+      },
+    },
+    mounted() {
+      this.loadSingleThread(this.threadId)
+    },
+    methods: {
+      ...mapActions({
+        loadSingleThread: 'thread/loadSingleThread',
+      }),
+    }
   }
-}
 </script>

@@ -17,11 +17,6 @@
         <span class="mr-auto">Super Kitty</span>
         <b-badge>9</b-badge>
       </b-list-group-item>
-      <b-list-group-item class="d-flex align-items-center">
-        <b-avatar variant="success" icon="people-fill" class="mr-3"></b-avatar>
-        <span class="mr-auto">ACME group</span>
-        <b-badge>7</b-badge>
-      </b-list-group-item>
     </b-list-group>
   </div>
 </template>
