@@ -1,16 +1,17 @@
 <template>
-  <div>
+  <div v-if="category">
+    <h4 class="m-0">{{category.title}}</h4><hr />
     <div class="d-flex justify-content-between">
       <span>
-        <b-button variant="primary" class="mb-2" :to="`/thread/new?cid=${categoryId}`">
+        <b-button variant="primary" :to="`/thread/new?cid=${categoryId}`">
           <b-icon icon="plus"></b-icon> مطلب جدید
         </b-button>
-        <b-button variant="primary" class="mb-2" @click="uiNewCategory">
+        <b-button variant="primary" @click="uiNewCategory">
           <b-icon icon="plus"></b-icon> زیر دسته جدید
         </b-button>
       </span>
       <span>
-        <b-button variant="warning" class="mb-2" @click="gotoParentCategory">
+        <b-button variant="warning" @click="gotoParentCategory">
           <b-icon icon="arrow-left-circle"></b-icon> بازگشت
         </b-button>
       </span>
@@ -31,9 +32,7 @@
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
-  import { BIcon, BIconPlus, BIconArrowLeftCircle } from 'bootstrap-vue'
   export default {
-    components: { BIcon, BIconPlus, BIconArrowLeftCircle },
     computed: {
       ...mapGetters({
         categories: 'category/items',
@@ -50,7 +49,7 @@
       }
     },
     mounted() {
-      this.loadThreads(this.categoryId)
+      this.loadThreads({ category_id: this.categoryId })
     },
     methods: {
       ...mapActions({

@@ -12,5 +12,6 @@ namespace Knowledgebase.Entities
         public string Contents { get; set; }
 
         public virtual Category Category { get; set; }
+        public virtual ICollection<ThreadTag> Tags { get; set; }
     }
 }

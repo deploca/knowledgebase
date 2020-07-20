@@ -11,6 +11,7 @@ namespace Knowledgebase.Entities
         public string Title { get; set; }
 
         public virtual Category ParentCategory { get; set; }
+        public virtual ICollection<Category> SubCategories { get; set; }
         public virtual ICollection<Thread> Threads { get; set; }
     }
 }

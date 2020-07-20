@@ -1,14 +1,14 @@
 <template>
     <footer class="footer py-4">
-        <div class="container">
+        <b-container fluid="lg">
             <div class="row align-items-center justify-content-md-between">
                 <div class="col-md-6">
                     <div class="copyright">
-                        &copy; {{year}}, ساخته شده با <span style="color: rgb(226, 85, 85);">❤</span> برای همه
+                        &copy; {{year}}, ساخته شده با <span style="color: rgb(226, 85, 85);">❤</span> توسط دیپلوکا
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <ul class="nav nav-footer justify-content-end">
+                    <!--<ul class="nav nav-footer justify-content-end">
                         <li class="nav-item">
                             <nuxt-link to="/" class="nav-link" rel="noopener"><i class="fa fa-home"></i> خانه</nuxt-link>
                         </li>
@@ -21,10 +21,10 @@
                         <li class="nav-item">
                             <a class="nav-link" href="https://www.linkedin.com/company/deploca" target="_blank"><i class="fab fa-linkedin"></i> لینکداین</a>
                         </li>
-                    </ul>
+                    </ul>-->
                 </div>
             </div>
-        </div>
+        </b-container>
     </footer>
 </template>
 <script>

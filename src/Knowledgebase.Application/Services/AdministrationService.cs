@@ -42,6 +42,9 @@ namespace Knowledgebase.Application.Services
                 CategoryId = category_id,
                 Title = "نحوه ثبت نام در سیستم",
                 Contents = "در قسمت منوی بالا روی دکمه ورود به سیستم کلیک کرده و ثبت نام را انتخاب نمایید.",
+                Tags = new Models.Tag.TagCreateOrUpdate[] {
+                    new Models.Tag.TagCreateOrUpdate { Name = "پایگاه دانش" }
+                },
             });
 
             await _uow.SaveChangesAsync();

@@ -25,6 +25,8 @@ namespace Knowledgebase.Application.Services
                     Id = x.Id,
                     ParentCategoryId = x.ParentCategoryId,
                     Title = x.Title,
+                    SubCategoriesCount = x.SubCategories.Count,
+                    ThreadsCount = x.Threads.Count,
                 })
                 .ToList();
         }

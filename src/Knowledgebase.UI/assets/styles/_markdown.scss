@@ -985,11 +985,14 @@
     margin: 0 .2em .25em -1.6em;
     vertical-align: middle;
   }
+}
 
-  .rtl,
-  [dir="rtl"] {
+.rtl,
+[dir="rtl"] {
+  .markdown {
     pre {
       direction: ltr;
+      text-align: left;
     }
   }
 }

@@ -7,14 +7,16 @@
       <small>{{data.updatedAt}}</small>
     </div>
 
-    <p class="mb-1">
+    <!--<p class="mb-1">
       Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
-    </p>
+    </p>-->
 
-    <div>
-      <b-badge to="/tag/os" variant="primary">os</b-badge>
-      <b-badge to="/tag/docker" variant="success">docker</b-badge>
-    </div>
+    <small>
+      <b-icon icon="person" /> مدیر سیستم |
+      <b-icon icon="clock" /> <time>{{data.createdAt}}</time> |
+      <b-icon icon="hash" />
+      <b-badge v-for="i in data.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
+    </small>
   </b-list-group-item>
 </template>
 <script>

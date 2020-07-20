@@ -1,3 +1,5 @@
+import { toQueryString } from '~/plugins/utils'
+
 export const state = {
   items: [],
   details: null
@@ -9,9 +11,10 @@ export const getters = {
 }
 
 export const actions = {
-  loadThreads({ commit }, categoryId) {
+  loadThreads({ commit }, data) {
     return new Promise((resolve, reject) => {
-      this.$api.get('/threads?category_id=' + categoryId).then(r => {
+      var params = toQueryString(data)
+      this.$api.get('/threads?' + params).then(r => {
         commit('set_items', r.data)
         return resolve(r.data)
       }).catch(e => reject(e))

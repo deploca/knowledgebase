@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="loaded">
     <AppHeader />
     <b-container fluid="lg">
       <b-row>
@@ -18,6 +18,9 @@
 <script>
   import { mapActions } from 'vuex'
   export default {
+    data: () => ({
+      loaded: false,
+    }),
     mounted() {
       this.loadAppSettings().then(appSettings => {
         if (!appSettings || Object.keys(appSettings).length == 0) {
@@ -26,6 +29,8 @@
         } else {
           // start application
           this.loadCategories();
+          this.loadTags();
+          this.loaded = true;
         }
       });
     },
@@ -33,6 +38,7 @@
       ...mapActions({
         loadAppSettings: 'appSettings/loadAppSettings',
         loadCategories: 'category/loadCategories',
+        loadTags: 'tag/loadTags',
       })
     }
   }</script>

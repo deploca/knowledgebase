@@ -16,5 +16,7 @@ namespace Knowledgebase.Models.Thread
         [Required]
         [MaxLength(4096)]
         public string Contents { get; set; }
+
+        public Tag.TagCreateOrUpdate[] Tags { get; set; }
     }
 }

@@ -18,10 +18,11 @@ namespace Knowledgebase.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetThreads(Guid? category_id, string keyword)
+        public IActionResult GetThreads(Guid? category_id, Guid? tag_id, string keyword)
         {
             var data = _threadService.GetAll(new ThreadSearch
             {
+                TagId = tag_id,
                 CategoryId = category_id,
                 Keyword = keyword
             });
@@ -39,6 +40,14 @@ namespace Knowledgebase.Api.Controllers
         public async Task<IActionResult> PostThread([FromBody] ThreadCreate input)
         {
             var result = await _threadService.Create(input);
+            return Ok(result);
+        }
+
+
+        [HttpGet("tags")]
+        public IActionResult GetTags()
+        {
+            var result = _threadService.GetTags();
             return Ok(result);
         }
     }

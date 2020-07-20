@@ -1,15 +1,23 @@
 <template>
   <div v-if="threadDetails">
     <div class="d-flex justify-content-between">
-      <h3>{{threadDetails.title}}</h3>
-      <b-button variant="warning" class="mb-2"
+      <div>
+        <h4 class="m-0">{{threadDetails.title}}</h4>
+        <br />
+        <b-icon icon="person" /> مدیر سیستم |
+        <b-icon icon="clock" /> <time>{{threadDetails.createdAt}}</time>
+        <br />
+        <b-icon icon="hash" />
+        <b-badge v-for="i in threadDetails.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
+      </div>
+      <b-button variant="warning"
                 @click="$router.push(`/category/${threadDetails.category.id}`)">
         بازگشت <b-icon icon="arrow-left-circle"></b-icon>
       </b-button>
     </div>
     <hr />
     <markdown :value="threadDetails.contents" />
-    <br /><br />
+    <!--<br /><br />
     <h5>بحث و گفتگو</h5><hr />
     <b-media>
       <template v-slot:aside>
@@ -38,15 +46,13 @@
           faucibus.
         </p>
       </b-media>
-    </b-media>
+    </b-media>-->
   </div>
 </template>
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
-  import { BIcon, BIconArrowLeftCircle } from 'bootstrap-vue'
   export default {
-    components: { BIcon, BIconArrowLeftCircle },
     computed: {
       ...mapGetters({
         threadDetails: 'thread/details',

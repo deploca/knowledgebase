@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace Knowledgebase.Models.Category
 {
-    public class CategoryBrief
+    public class CategoryBrief : IdBaseDto
     {
-        public Guid Id { get; set; }
         public Guid? ParentCategoryId { get; set; }
         public string Title { get; set; }
+        public int SubCategoriesCount { get; set; }
+        public int ThreadsCount { get; set; }
     }
 }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Knowledgebase.Models.Thread
 {
-    public class ThreadBrief
+    public class ThreadBrief : IdBaseDto
     {
-        public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Title { get; set; }
+        public ICollection<Tag.TagBrief> Tags { get; set; }
     }
 }

@@ -3,7 +3,7 @@ export const state = {
 }
 
 export const getters = {
-  items: state => state.items
+  items: state => state.items,
 }
 
 export const actions = {
