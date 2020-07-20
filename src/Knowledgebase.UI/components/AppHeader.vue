@@ -1,6 +1,6 @@
 <template>
   <header class="bg-primary mb-4">
-    <div class="container">
+    <b-container fluid="lg">
       <b-navbar toggleable="lg" type="dark">
         <b-navbar-brand to="/">پایگاه دانش</b-navbar-brand>
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -15,6 +15,6 @@
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
-    </div>
+    </b-container>
   </header>
 </template>

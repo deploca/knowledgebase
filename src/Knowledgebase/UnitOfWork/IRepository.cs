@@ -9,6 +9,10 @@ namespace Knowledgebase.UnitOfWork
         where TEntity : class
     {
         IQueryable<TEntity> GetAll();
+
         void Insert(TEntity entity);
+        void BatchInsert(ICollection<TEntity> entities);
+
+        void Update(TEntity entity);
     }
 }

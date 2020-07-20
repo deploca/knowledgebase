@@ -34,6 +34,8 @@ namespace Knowledgebase.Api
                 provider.GetRequiredService<Persistent.AppDbContext>());
             
             // services
+            services.AddTransient<Application.Services.AdministrationService>();
+            services.AddTransient<Application.Services.AppSettingService>();
             services.AddTransient<Application.Services.CategoryService>();
             services.AddTransient<Application.Services.ThreadService>();
 

@@ -25,5 +25,16 @@ namespace Knowledgebase.Persistent
         {
             _set.Add(entity);
         }
+
+        public void BatchInsert(ICollection<TEntity> entities)
+        {
+            foreach (var i in entities)
+                _set.Add(i);
+        }
+
+        public void Update(TEntity entity)
+        {
+            _set.Update(entity);
+        }
     }
 }

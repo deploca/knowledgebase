@@ -34,6 +34,7 @@ namespace Knowledgebase.Persistent
 
         #region Entities
 
+        public virtual DbSet<Entities.AppSetting> AppSettings { get; set; }
         public virtual DbSet<Entities.Category> Categories { get; set; }
         public virtual DbSet<Entities.Thread> Threads { get; set; }
 

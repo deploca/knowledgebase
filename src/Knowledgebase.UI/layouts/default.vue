@@ -15,13 +15,23 @@
   </div>
 </template>
 
-<script>import { mapActions } from 'vuex'
+<script>
+  import { mapActions } from 'vuex'
   export default {
     mounted() {
-      this.loadCategories();
+      this.loadAppSettings().then(appSettings => {
+        if (!appSettings || Object.keys(appSettings).length == 0) {
+          // first run, goto setup page
+          this.$router.push('/admin/setup')
+        } else {
+          // start application
+          this.loadCategories();
+        }
+      });
     },
     methods: {
       ...mapActions({
+        loadAppSettings: 'appSettings/loadAppSettings',
         loadCategories: 'category/loadCategories',
       })
     }
