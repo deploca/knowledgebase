@@ -39,7 +39,9 @@ export default {
   */
   plugins: [
     { src: '~/plugins/i18n' },
+    { src: '~/plugins/datetime' },
     { src: '~/plugins/api' },
+    { src: '~/plugins/filters' },
     { src: '~/plugins/components/index' },
   ],
   /*

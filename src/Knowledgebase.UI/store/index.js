@@ -13,7 +13,7 @@ export const getters = {
 
 export const mutations = {
   SET_LANG(state, locale) {
-    if (state.locales.includes(locale)) {
+    if (state.locales.map(x => x.code).includes(locale)) {
       state.locale = locale
     }
   }

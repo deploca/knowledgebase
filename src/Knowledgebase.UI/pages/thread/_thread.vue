@@ -12,8 +12,8 @@
           <b-button variant="danger" @click="titleEditToggle()">Cancel</b-button>
         </b-input-group-append>
       </b-input-group>
-      <b-icon icon="person" /> مدیر سیستم |
-      <b-icon icon="clock" /> <time>{{threadDetails.createdAt}}</time>
+      <!--<b-icon icon="person" /> مدیر سیستم |-->
+      <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
       <br />
       <b-icon icon="hash" />
       <b-badge v-for="i in threadDetails.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
@@ -48,7 +48,9 @@
       </b-button>
     </div>
     <div>
-      <markdown :value="threadDetails.contents.contents" v-if="!contentsEditMode" />
+      <b-card v-if="!contentsEditMode">
+        <markdown :value="threadDetails.contents.contents" />
+      </b-card>
       <b-form-textarea v-model="contentsEditValue"
                        :placeholder="$t('thread.enter-contents')"
                        rows="3" max-rows="24"
@@ -99,7 +101,7 @@
         return this.$route.params.thread;
       },
       uiThreadVersions() {
-        return this.threadDetails.versions.map(x => ({ value: x.id, text: 'user@' + x.createdAt.toString() }))
+        return this.threadDetails.versions.map(x => ({ value: x.id, text: 'user @ ' + this.$dateTime.formatDateTime(x.createdAt) }))
       }
     },
     data: () => ({
