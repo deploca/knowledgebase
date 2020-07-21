@@ -30,24 +30,67 @@ namespace Knowledgebase.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetSingleThreads(Guid id)
+        public IActionResult GetSingleThread(Guid id)
         {
             var data = _threadService.GetDetails(id);
             return Ok(data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostThread([FromBody] ThreadCreate input)
+        public async Task<IActionResult> CreateThread([FromBody] ThreadCreate input)
         {
             var result = await _threadService.Create(input);
             return Ok(result);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateThread([FromBody] ThreadUpdate input)
+        {
+            await _threadService.UpdateThread(input);
+            return Ok();
+        }
+
+        [HttpPut("title")]
+        public async Task<IActionResult> UpdateThreadTitle([FromBody] ThreadUpdateTitle input)
+        {
+            await _threadService.UpdateThreadTitle(input);
+            return Ok();
+        }
+
+        [HttpPut("tags")]
+        public async Task<IActionResult> UpdateThreadTags([FromBody] ThreadUpdateTags input)
+        {
+            await _threadService.UpdateThreadTags(input);
+            return Ok();
+        }
+
+        [HttpPut("contents")]
+        public async Task<IActionResult> UpdateThreadContents([FromBody] ThreadUpdateContents input)
+        {
+            var result = await _threadService.UpdateThreadContents(input);
+            return Ok(result);
+        }
+
+
+        [HttpGet("{thread_id}/contents")]
+        public IActionResult GetContentsOfThread(Guid thread_id)
+        {
+            var data = _threadService.GetAllContents(thread_id);
+            return Ok(data);
+        }
+
+        [HttpGet("contents/{content_id}")]
+        public IActionResult GetContentDetails(Guid content_id)
+        {
+            var data = _threadService.GetContent(content_id);
+            return Ok(data);
+        }
+
 
         [HttpGet("tags")]
-        public IActionResult GetTags()
+        public IActionResult GetAllTags()
         {
-            var result = _threadService.GetTags();
+            var result = _threadService.GetAllTags();
             return Ok(result);
         }
     }

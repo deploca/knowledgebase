@@ -4,7 +4,11 @@
     "app-name": "Knowledgebase",
     "language": "Language",
     "return": "Return",
-    "copyright": "Developed by Deploca"
+    "copyright": "Developed by Deploca",
+    "edit": "Edit",
+    "save": "Save",
+    "save-changes": "Save Changes",
+    "cancel": "Cancel"
   },
   "thread": {
     "singular": "Thread",
@@ -12,6 +16,8 @@
     "new": "New Thread",
     "title": "Title",
     "contents": "Contents",
+    "version": "Version",
+    "latest-version": "Latest version",
     "enter-title": "Enter title",
     "enter-contents": "Enter contents",
     "add-this-as-a-new-tag": "Add this as a new tag",

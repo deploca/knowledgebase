@@ -12,11 +12,13 @@ namespace Knowledgebase.Application.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly IRepository<Entities.Thread> _threadRepository;
+        private readonly IRepository<Entities.ThreadContent> _threadContentRepository;
         private readonly IRepository<Entities.Tag> _tagRepository;
         public ThreadService(IUnitOfWork uow)
         {
             _uow = uow;
             _threadRepository = uow.GetRepository<Entities.Thread>();
+            _threadContentRepository = uow.GetRepository<Entities.ThreadContent>();
             _tagRepository = uow.GetRepository<Entities.Tag>();
         }
 
@@ -58,7 +60,16 @@ namespace Knowledgebase.Application.Services
                     CreatedAt = x.CreatedAt,
                     UpdatedAt = x.UpdatedAt,
                     Title = x.Title,
-                    Contents = x.Contents,
+                    Contents = x.Contents.OrderByDescending(c => c.CreatedAt)
+                        .Select(c => new ThreadContentDetails
+                        {
+                            Id = c.Id,
+                            ThreadId = c.ThreadId,
+                            CreatedAt = c.CreatedAt,
+                            Contents = c.Content,
+                        }).FirstOrDefault(),
+                    Versions = x.Contents.OrderByDescending(c => c.CreatedAt)
+                        .Select(c => new ThreadContentBrief { Id = c.Id, CreatedAt = c.CreatedAt }).ToList(),
                     Category = new Models.Category.CategoryBrief
                     {
                         Id = x.CategoryId,
@@ -83,7 +94,7 @@ namespace Knowledgebase.Application.Services
                 //var existingTags = _tagRepository.GetAll()
                 //    .Where(x => input.Tags.Contains(x.Name))
                 //    .Select(x => new { x.Id, x.Name }).ToArray();
-                var existingTags = input.Tags.Where(x => x.Id.HasValue).ToArray();
+                var existingTags = input.Tags.Where(x => x.Id.HasValue);
                 tags.AddRange(existingTags.Select(x => new Entities.ThreadTag
                 {
                     Id = Guid.NewGuid(),
@@ -91,7 +102,7 @@ namespace Knowledgebase.Application.Services
                 }));
 
                 // create new tags
-                var newTags = input.Tags.Where(x => x.Id.HasValue == false).ToArray();
+                var newTags = input.Tags.Where(x => x.Id.HasValue == false);
                 var newTagEntities = newTags
                     .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
                     .ToArray();
@@ -110,7 +121,13 @@ namespace Knowledgebase.Application.Services
                 CreatedAt = DateTime.UtcNow,
                 CategoryId = input.CategoryId,
                 Title = input.Title,
-                Contents = input.Contents,
+                Contents = new List<Entities.ThreadContent>() {
+                    new Entities.ThreadContent {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        Content = input.Contents
+                    }
+                },
                 Tags = tags,
             };
             _threadRepository.Insert(model);
@@ -120,8 +137,186 @@ namespace Knowledgebase.Application.Services
             return model.Id;
         }
 
+        public async Task UpdateThread(ThreadUpdate input)
+        {
+            var threadModel = _threadRepository.Find(input.Id);
+            var latestContent = _threadContentRepository.GetAll()
+                .Where(x => x.ThreadId == input.Id)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefault();
+            var tags = _threadRepository.GetAll().Where(x => x.Id == input.Id)
+                .SelectMany(x => x.Tags).ToList();
 
-        public ICollection<TagDetails> GetTags()
+            // contents
+            if (latestContent.Content != input.Contents)
+            {
+                _threadContentRepository.Insert(new Entities.ThreadContent
+                {
+                    Id = Guid.NewGuid(),
+                    ThreadId = input.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    Content = input.Contents,
+                });
+            }
+
+            // tags
+            if (input.Tags != null && input.Tags.Length > 0)
+            {
+                // remove removed tags
+                tags.RemoveAll(x => input.Tags.Select(y => y.Id).Contains(x.TagId) == false);
+
+                // add new existing tags
+                var newExistingTags = input.Tags.Where(x => x.Id.HasValue && tags.Select(y => y.TagId).Contains(x.Id.Value) == false);
+                tags.AddRange(newExistingTags.Select(x => new Entities.ThreadTag
+                {
+                    Id = Guid.NewGuid(),
+                    TagId = x.Id.Value,
+                }));
+
+                // add new not-existing tags
+                var newNotExistingTags = input.Tags.Where(x => x.Id.HasValue == false);
+                var newNotExistingTagEntities = newNotExistingTags
+                    .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
+                    .ToArray();
+                _tagRepository.BatchInsert(newNotExistingTagEntities);
+                tags.AddRange(newNotExistingTagEntities.Select(x => new Entities.ThreadTag
+                {
+                    Id = Guid.NewGuid(),
+                    TagId = x.Id,
+                }));
+            }
+            else
+            {
+                tags.RemoveAll(x => true);
+            }
+
+            threadModel.Title = input.Title;
+            threadModel.UpdatedAt = DateTime.UtcNow;
+            threadModel.Tags = tags;
+            _threadRepository.Update(threadModel);
+
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task UpdateThreadTitle(ThreadUpdateTitle input)
+        {
+            var threadModel = _threadRepository.Find(input.Id);
+
+            if (threadModel.Title == input.Title)
+                throw new Exception("Nothing changed");
+
+            threadModel.Title = input.Title;
+            threadModel.UpdatedAt = DateTime.UtcNow;
+            _threadRepository.Update(threadModel);
+
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task<ThreadContentDetails> UpdateThreadContents(ThreadUpdateContents input)
+        {
+            var threadModel = _threadRepository.Find(input.Id);
+            var latestContent = _threadContentRepository.GetAll()
+                .Where(x => x.ThreadId == input.Id)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefault();
+
+            if (latestContent.Content == input.Contents)
+                throw new Exception("Nothing changed");
+
+            var threadContentModel = new Entities.ThreadContent
+            {
+                Id = Guid.NewGuid(),
+                ThreadId = input.Id,
+                CreatedAt = DateTime.UtcNow,
+                Content = input.Contents,
+            };
+            _threadContentRepository.Insert(threadContentModel);
+
+            threadModel.UpdatedAt = DateTime.UtcNow;
+            _threadRepository.Update(threadModel);
+
+            await _uow.SaveChangesAsync();
+
+            return new ThreadContentDetails
+            {
+                Id = threadContentModel.Id,
+                CreatedAt = threadContentModel.CreatedAt,
+                Contents = threadContentModel.Content,
+                ThreadId = threadContentModel.ThreadId
+            };
+        }
+
+        public async Task UpdateThreadTags(ThreadUpdateTags input)
+        {
+            var threadModel = _threadRepository.Find(input.Id);
+            var tags = _threadRepository.GetAll().Where(x => x.Id == input.Id)
+                .SelectMany(x => x.Tags).ToList();
+
+            // tags
+            if (input.Tags != null && input.Tags.Length > 0)
+            {
+                // remove removed tags
+                tags.RemoveAll(x => input.Tags.Select(y => y.Id).Contains(x.TagId) == false);
+
+                // add new existing tags
+                var newExistingTags = input.Tags.Where(x => x.Id.HasValue && tags.Select(y => y.TagId).Contains(x.Id.Value) == false);
+                tags.AddRange(newExistingTags.Select(x => new Entities.ThreadTag
+                {
+                    Id = Guid.NewGuid(),
+                    TagId = x.Id.Value,
+                }));
+
+                // add new not-existing tags
+                var newNotExistingTags = input.Tags.Where(x => x.Id.HasValue == false);
+                var newNotExistingTagEntities = newNotExistingTags
+                    .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
+                    .ToArray();
+                _tagRepository.BatchInsert(newNotExistingTagEntities);
+                tags.AddRange(newNotExistingTagEntities.Select(x => new Entities.ThreadTag
+                {
+                    Id = Guid.NewGuid(),
+                    TagId = x.Id,
+                }));
+            }
+            else
+            {
+                tags.RemoveAll(x => true);
+            }
+
+            threadModel.Tags = tags;
+            threadModel.UpdatedAt = DateTime.UtcNow;
+            _threadRepository.Update(threadModel);
+
+            await _uow.SaveChangesAsync();
+        }
+
+
+        public ICollection<ThreadContentBrief> GetAllContents(Guid threadId)
+        {
+            return _threadContentRepository.GetAll()
+                .Where(x => x.ThreadId == threadId)
+                .Select(x => new ThreadContentBrief
+                {
+                    Id = x.Id,
+                    CreatedAt = x.CreatedAt,
+                }).ToList();
+        }
+
+        public ThreadContentDetails GetContent(Guid id)
+        {
+            return _threadContentRepository.GetAll()
+                .Where(x => x.Id == id)
+                .Select(x => new ThreadContentDetails
+                {
+                    Id = x.Id,
+                    ThreadId = x.ThreadId,
+                    CreatedAt = x.CreatedAt,
+                    Contents = x.Content
+                }).FirstOrDefault();
+        }
+
+
+        public ICollection<TagDetails> GetAllTags()
         {
             return _tagRepository.GetAll()
                 .Select(x => new TagDetails
@@ -129,6 +324,18 @@ namespace Knowledgebase.Application.Services
                     Id = x.Id,
                     Name = x.Name,
                     ThreadsCount = x.Threads.Count
+                }).ToList();
+        }
+
+        public ICollection<TagBrief> GetThreadTags(Guid id)
+        {
+            return _threadRepository.GetAll()
+                .Where(x => x.Id == id)
+                .SelectMany(x => x.Tags)
+                .Select(x => new TagBrief
+                {
+                    Id = x.TagId,
+                    Name = x.Tag.Name,
                 }).ToList();
         }
     }

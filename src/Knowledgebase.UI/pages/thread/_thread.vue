@@ -1,22 +1,60 @@
 <template>
   <div v-if="threadDetails">
-    <div class="d-flex justify-content-between">
-      <div>
-        <h4 class="m-0">{{threadDetails.title}}</h4>
-        <br />
-        <b-icon icon="person" /> مدیر سیستم |
-        <b-icon icon="clock" /> <time>{{threadDetails.createdAt}}</time>
-        <br />
-        <b-icon icon="hash" />
-        <b-badge v-for="i in threadDetails.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
+    <div>
+      <div class="mb-2" v-if="!titleEditMode" v-b-hover="(isHovered) => titleEditButtonVisible = isHovered">
+        <h4 class="d-inline m-0">{{threadDetails.title}}</h4>
+        <b-link class="ml-4" @click="titleEditToggle()" v-if="titleEditButtonVisible"><b-icon icon="pencil" /></b-link>
       </div>
-      <b-button variant="warning"
-                @click="$router.push(`/category/${threadDetails.category.id}`)">
+      <b-input-group v-if="titleEditMode">
+        <b-form-input v-model="titleEditValue"></b-form-input>
+        <b-input-group-append>
+          <b-button variant="success" @click="updateTitle()">Update</b-button>
+          <b-button variant="danger" @click="titleEditToggle()">Cancel</b-button>
+        </b-input-group-append>
+      </b-input-group>
+      <b-icon icon="person" /> مدیر سیستم |
+      <b-icon icon="clock" /> <time>{{threadDetails.createdAt}}</time>
+      <br />
+      <b-icon icon="hash" />
+      <b-badge v-for="i in threadDetails.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
+    </div>
+    <hr />
+    <div class="d-flex justify-content-between mb-2">
+      <div v-if="!contentsEditMode">
+        <b-form inline>
+          <b-button variant="primary"
+                    @click="contentsEditToggle()"
+                    :disabled="selectedThreadContentVersionId != threadDetails.latestVersionContents.id">
+            <b-icon icon="pencil"></b-icon> {{$t('common.edit')}}
+          </b-button>
+          <b-input-group :prepend="$t('thread.version')" class="ml-2">
+            <b-form-select v-model="selectedThreadContentVersionId"
+                           :options="uiThreadVersions"
+                           @change="onThreadVersionChange">
+            </b-form-select>
+          </b-input-group>
+        </b-form>
+      </div>
+      <div v-else>
+        <b-button variant="success" @click="updateContents()">
+          <b-icon icon="check2"></b-icon> {{$t('common.save-changes')}}
+        </b-button>
+        <b-button variant="danger" @click="contentsEditToggle()">
+          <b-icon icon="x"></b-icon> {{$t('common.cancel')}}
+        </b-button>
+      </div>
+      <b-button variant="warning" @click="$router.push(`/category/${threadDetails.category.id}`)">
         {{$t('common.return')}} <b-icon icon="arrow-left-circle"></b-icon>
       </b-button>
     </div>
-    <hr />
-    <markdown :value="threadDetails.contents" />
+    <div>
+      <markdown :value="threadDetails.contents.contents" v-if="!contentsEditMode" />
+      <b-form-textarea v-model="contentsEditValue"
+                       :placeholder="$t('thread.enter-contents')"
+                       rows="3" max-rows="24"
+                       v-else>
+      </b-form-textarea>
+    </div>
     <!--<br /><br />
     <h5>بحث و گفتگو</h5><hr />
     <b-media>
@@ -60,14 +98,54 @@
       threadId() {
         return this.$route.params.thread;
       },
+      uiThreadVersions() {
+        return this.threadDetails.versions.map(x => ({ value: x.id, text: 'user@' + x.createdAt.toString() }))
+      }
     },
+    data: () => ({
+      titleEditButtonVisible: false,
+      titleEditMode: false,
+      titleEditValue: '',
+      contentsEditMode: false,
+      contentsEditValue: '',
+      selectedThreadContentVersionId: null,
+    }),
     mounted() {
-      this.loadSingleThread(this.threadId)
+      this.loadSingleThread(this.threadId).then(() => {
+        this.selectedThreadContentVersionId = this.threadDetails.contents.id
+      })
     },
     methods: {
       ...mapActions({
         loadSingleThread: 'thread/loadSingleThread',
+        loadSingleThreadContents: 'thread/loadSingleThreadContents',
+        updateThreadTitle: 'thread/updateThreadTitle',
+        updateThreadContents: 'thread/updateThreadContents',
       }),
+      titleEditToggle() {
+        this.titleEditValue = this.threadDetails.title
+        this.titleEditMode = !this.titleEditMode
+      },
+      updateTitle() {
+        var data = { id: this.threadId, title: this.titleEditValue }
+        this.updateThreadTitle(data).then(r => {
+          this.titleEditToggle()
+        })
+      },
+      contentsEditToggle() {
+        this.contentsEditValue = this.threadDetails.contents.contents
+        this.contentsEditMode = !this.contentsEditMode
+      },
+      updateContents() {
+        var data = { id: this.threadId, contents: this.contentsEditValue }
+        this.updateThreadContents(data).then(contents => {
+          this.selectedThreadContentVersionId = contents.id
+          this.contentsEditToggle()
+        })
+      },
+      onThreadVersionChange(value) {
+        this.loadSingleThreadContents(value || 'latest')
+      }
     }
   }
 </script>

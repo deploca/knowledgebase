@@ -1,6 +1,6 @@
 <template>
   <div class="py-2">
-    <div class="py-2"><b-icon icon="hash" /> {{$t('tag.singular')}}</div>
+    <div class="py-2"><b-icon icon="hash" /> {{$t('tag.plural')}}</div>
     <b-list-group>
       <b-list-group-item v-for="i in tags" :key="i.id"
                          class="d-flex justify-content-between align-items-center"

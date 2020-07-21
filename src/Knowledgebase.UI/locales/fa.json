@@ -4,7 +4,11 @@
     "app-name": "پایگاه دانش",
     "language": "زبان",
     "return": "بازگشت",
-    "copyright": "ساخته شده توسط دیپلوکا"
+    "copyright": "ساخته شده توسط دیپلوکا",
+    "edit": "ویرایش",
+    "save": "ذخیره",
+    "save-changes": "ذخیره تغییرات",
+    "cancel": "انصراف"
   },
   "thread": {
     "singular": "مطلب",
@@ -12,6 +16,8 @@
     "new": "مطلب جدید",
     "title": "موضوع",
     "contents": "متن",
+    "version": "نسخه",
+    "latest-version": "آخرین نسخه",
     "enter-title": "عنوان مطلب را وارد کنید",
     "enter-contents": "متن را وارد کنید",
     "add-this-as-a-new-tag": "این عبارت را بعنوان یک برچسب جدید ثبت کن",

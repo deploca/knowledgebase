@@ -9,9 +9,9 @@ namespace Knowledgebase.Entities
         public DateTime? UpdatedAt { get; set; }
         public Guid CategoryId { get; set; }
         public string Title { get; set; }
-        public string Contents { get; set; }
 
         public virtual Category Category { get; set; }
+        public virtual ICollection<ThreadContent> Contents { get; set; }
         public virtual ICollection<ThreadTag> Tags { get; set; }
     }
 }

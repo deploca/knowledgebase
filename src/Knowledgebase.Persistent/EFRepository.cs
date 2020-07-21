@@ -21,6 +21,11 @@ namespace Knowledgebase.Persistent
             return _set.AsQueryable();
         }
 
+        public TEntity Find(Guid id)
+        {
+            return _set.Find(id);
+        }
+
         public void Insert(TEntity entity)
         {
             _set.Add(entity);
