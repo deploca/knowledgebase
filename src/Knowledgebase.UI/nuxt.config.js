@@ -16,7 +16,7 @@ export default {
   */
   head: {
     title: 'Knowledgebase',
-    htmlAttrs: { 'lang': 'fa', 'dir': 'rtl' },
+    //htmlAttrs: { 'lang': 'fa', 'dir': 'rtl' },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -38,6 +38,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/i18n' },
     { src: '~/plugins/api' },
     { src: '~/plugins/components/index' },
   ],

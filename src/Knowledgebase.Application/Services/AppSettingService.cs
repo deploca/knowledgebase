@@ -9,6 +9,7 @@ namespace Knowledgebase.Application.Services
     public class AppSettingService
     {
         #region Key Constants
+        public const string KEY_Locale = "Locale";
         public const string KEY_CompanyName = "CompanyName";
         #endregion
 

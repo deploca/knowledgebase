@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loaded">
+  <div :dir="direction" v-if="loaded">
     <AppHeader />
     <b-container fluid="lg">
       <b-row>
@@ -18,6 +18,11 @@
 <script>
   import { mapActions } from 'vuex'
   export default {
+    computed: {
+      direction() {
+        return this.$t('dir')
+      }
+    },
     data: () => ({
       loaded: false,
     }),
@@ -30,6 +35,11 @@
           // start application
           this.loadCategories();
           this.loadTags();
+
+          // set configurations
+          this.$store.commit('SET_LANG', appSettings['Locale'])
+          this.$i18n.locale = appSettings['Locale']
+
           this.loaded = true;
         }
       });

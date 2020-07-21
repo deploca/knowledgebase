@@ -1,22 +1,22 @@
 <template>
   <div>
-    <h4>مطلب جدید</h4><hr />
+    <h4>{{$t('thread.new')}}</h4><hr />
     <b-form @submit="onSubmit">
-      <b-form-group label="موضوع:">
+      <b-form-group :label="$t('thread.title')">
         <b-form-input v-model="model.title"
-                      placeholder="Enter the thread title"
+                      :placeholder="$t('thread.enter-title')"
                       required />
       </b-form-group>
-      <b-form-group label="متن:">
+      <b-form-group :label="$t('thread.contents')">
         <b-form-textarea v-model="model.contents"
-                         placeholder="Enter something..."
+                         :placeholder="$t('thread.enter-contents')"
                          rows="3" max-rows="6">
         </b-form-textarea>
       </b-form-group>
-      <b-form-group label="برچسب ها:">
+      <b-form-group :label="$t('tag.plural')">
         <multiselect v-model="model.tags"
-                     tag-placeholder="این عبارت را بعنوان یک برچسب جدید ثبت کن"
-                     placeholder="جستجو یا افزودن یک برچسب جدید"
+                     :tag-placeholder="$t('thread.add-this-as-a-new-tag')"
+                     :placeholder="$t('thread.search-or-add-a-new-tag')"
                      label="name"
                      track-by="id"
                      :options="tagsLocal"
@@ -25,8 +25,8 @@
                      @tag="addTag">
         </multiselect>
       </b-form-group>
-      <b-button type="submit" variant="primary">ثبت مطلب جدید</b-button>
-      <b-button variant="warning" @click="cancel">بازگشت</b-button>
+      <b-button type="submit" variant="primary">{{$t('thread.new')}}</b-button>
+      <b-button variant="warning" @click="cancel">{{$t('common.return')}}</b-button>
     </b-form>
   </div>
 </template>
@@ -38,9 +38,6 @@
       ...mapGetters({
         tags: 'tag/items',
       }),
-      //uiTags() {
-      //  return this.tags.map(x => ({  }))
-      //},
     },
     data: () => ({
       model: {

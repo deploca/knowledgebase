@@ -2,7 +2,7 @@
   <header class="bg-primary mb-4">
     <b-container fluid="lg">
       <b-navbar toggleable="lg" type="dark">
-        <b-navbar-brand to="/">{{companyName}} - پایگاه دانش</b-navbar-brand>
+        <b-navbar-brand to="/">{{companyName}} - {{$t('common.app-name')}}</b-navbar-brand>
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
         <b-collapse id="nav-collapse" is-nav>
           <!--<b-navbar-nav>
@@ -27,6 +27,7 @@
       ...mapGetters({
         appSettings: 'appSettings/items'
       }),
+
       companyName() {
         return this.appSettings['CompanyName']
       }

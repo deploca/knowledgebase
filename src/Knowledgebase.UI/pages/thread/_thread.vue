@@ -12,7 +12,7 @@
       </div>
       <b-button variant="warning"
                 @click="$router.push(`/category/${threadDetails.category.id}`)">
-        بازگشت <b-icon icon="arrow-left-circle"></b-icon>
+        {{$t('common.return')}} <b-icon icon="arrow-left-circle"></b-icon>
       </b-button>
     </div>
     <hr />
