@@ -51,4 +51,5 @@
         loadTags: 'tag/loadTags',
       })
     }
-  }</script>
+  }
+</script>
