@@ -40,7 +40,11 @@ namespace Knowledgebase.Api
             services.AddTransient<Application.Services.ThreadService>();
 
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers()
+                .AddMvcOptions(options =>
+                {
+                    options.Filters.Add<Filters.ExceptionActionFilter>();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

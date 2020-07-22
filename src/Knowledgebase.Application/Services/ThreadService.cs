@@ -39,6 +39,9 @@ namespace Knowledgebase.Application.Services
                     q = q.Where(x => x.Title.Contains(input.Keyword));
             }
 
+            // sort
+            q = q.OrderBy(x => x.Title);
+
             return q
                 .Select(x => new ThreadBrief
                 {
@@ -84,7 +87,7 @@ namespace Knowledgebase.Application.Services
                     {
                         Id = y.TagId,
                         Name = y.Tag.Name
-                    }).ToList(),
+                    }).OrderBy(y => y.Name).ToList(),
                 })
                 .FirstOrDefault();
 
@@ -111,14 +114,17 @@ namespace Knowledgebase.Application.Services
 
         public async Task<Guid> Create(ThreadCreate input)
         {
+            // validation
+            var sameNameExist = _threadRepository.GetAll()
+                .Where(x => x.CategoryId == input.CategoryId && x.Title == input.Title).Any();
+            if (sameNameExist)
+                throw new Exceptions.BadRequestException("THREAD_WITH_SAME_NAME_EXIST");
+
             // tags
             var tags = new List<Entities.ThreadTag>();
             if (input.Tags != null && input.Tags.Length > 0)
             {
                 // existing tags
-                //var existingTags = _tagRepository.GetAll()
-                //    .Where(x => input.Tags.Contains(x.Name))
-                //    .Select(x => new { x.Id, x.Name }).ToArray();
                 var existingTags = input.Tags.Where(x => x.Id.HasValue);
                 tags.AddRange(existingTags.Select(x => new Entities.ThreadTag
                 {
@@ -228,7 +234,7 @@ namespace Knowledgebase.Application.Services
             var threadModel = _threadRepository.Find(input.Id);
 
             if (threadModel.Title == input.Title)
-                throw new Exception("Nothing changed");
+                throw new Exceptions.BadRequestException("NOTHING_CHANGED");
 
             threadModel.Title = input.Title;
             threadModel.UpdatedAt = DateTime.UtcNow;
@@ -246,7 +252,7 @@ namespace Knowledgebase.Application.Services
                 .FirstOrDefault();
 
             if (latestContent.Content == input.Contents)
-                throw new Exception("Nothing changed");
+                throw new Exceptions.BadRequestException("NOTHING_CHANGED");
 
             var threadContentModel = new Entities.ThreadContent
             {
@@ -320,6 +326,7 @@ namespace Knowledgebase.Application.Services
         {
             return _threadContentRepository.GetAll()
                 .Where(x => x.ThreadId == threadId)
+                .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new ThreadContentBrief
                 {
                     Id = x.Id,
@@ -344,6 +351,7 @@ namespace Knowledgebase.Application.Services
         public ICollection<TagDetails> GetAllTags()
         {
             return _tagRepository.GetAll()
+                .OrderBy(x => x.Name)
                 .Select(x => new TagDetails
                 {
                     Id = x.Id,
@@ -361,7 +369,9 @@ namespace Knowledgebase.Application.Services
                 {
                     Id = x.TagId,
                     Name = x.Tag.Name,
-                }).ToList();
+                })
+                .OrderBy(x => x.Name)
+                .ToList();
         }
     }
 }

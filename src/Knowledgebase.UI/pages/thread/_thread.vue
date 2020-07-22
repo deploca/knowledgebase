@@ -70,25 +70,13 @@
             </b-badge>
           </b-card-text>
         </b-card>
-        <b-card>
-          <b-card-title title-tag="h5">
-            <b-icon icon="filter-right" /> {{$t('thread.map')}}
-          </b-card-title>
-          <b-card-text>
-            <div v-for="c,ci in threadDetails.parentCategories" :key="c.id">
-              <span v-if="ci > 0">
-                <b-icon icon="blank" v-for="i,ii in (new Array(ci-1))" :key="ii" />
-                <b-icon icon="arrow90deg-up" />
-              </span>
-              <b-link :to="`/category/${c.id}`">{{c.name}}</b-link>
-            </div>
-            <div v-for="t,ti in threadDetails.siblingThreads" :key="t.id">
-              <b-icon icon="blank" v-for="i,ii in (new Array(threadDetails.parentCategories.length-1))" :key="ii" />
-              <b-icon icon="files" />
-              <b-link :to="`/thread/${t.id}`">{{t.name}}</b-link>
-            </div>
-          </b-card-text>
-        </b-card>
+        <StructureMap
+          :parents="threadDetails.parentCategories"
+          :siblings="threadDetails.siblingThreads"
+          parentsRouteBase="/category/"
+          siblingsRouteBase="/thread/"
+          siblingsIcon="files"
+          currentId="threadId" />
       </div>
     </b-col>
   </b-row>
@@ -166,6 +154,12 @@
         var data = { id: this.threadId, title: this.titleEditValue }
         this.updateThreadTitle(data).then(r => {
           this.titleEditToggle()
+        }).catch(e => {
+          if (e.serverMessage == 'NOTHING_CHANGED') {
+            this.titleEditToggle()
+          } else {
+            e.showNotification(this)
+          }
         })
       },
       contentsEditToggle() {
@@ -177,6 +171,12 @@
         this.updateThreadContents(data).then(contents => {
           this.selectedThreadContentVersionId = contents.id
           this.contentsEditToggle()
+        }).catch(e => {
+          if (e.serverMessage == 'NOTHING_CHANGED') {
+            this.contentsEditToggle()
+          } else {
+            e.showNotification(this)
+          }
         })
       },
       onThreadVersionChange(value) {

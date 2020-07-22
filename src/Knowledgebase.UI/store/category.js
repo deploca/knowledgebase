@@ -1,9 +1,9 @@
 import { toQueryString } from '~/plugins/utils'
 
-export const state = {
+export const state = () => ({
   items: [],
   details: null,
-}
+})
 
 export const getters = {
   items: state => state.items,

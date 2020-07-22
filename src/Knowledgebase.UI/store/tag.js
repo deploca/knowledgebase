@@ -1,6 +1,6 @@
-export const state = {
+export const state = () => ({
   items: []
-}
+})
 
 export const getters = {
   items: state => state.items

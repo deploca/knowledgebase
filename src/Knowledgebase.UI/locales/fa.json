@@ -3,6 +3,7 @@
   "common": {
     "app-name": "پایگاه دانش",
     "language": "زبان",
+    "home": "خانه",
     "return": "بازگشت",
     "copyright": "ساخته شده توسط دیپلوکا",
     "edit": "ویرایش",
@@ -14,7 +15,7 @@
     "singular": "مطلب",
     "plural": "مطالب",
     "new": "مطلب جدید",
-    "title": "موضوع",
+    "title": "عنوان",
     "contents": "متن",
     "version": "نسخه",
     "map": "نقشه",
@@ -58,5 +59,10 @@
     }
   },
   "errors": {
+    "ERROR_HAPPEND": "بروز خطا",
+    "NOT_ALLOWED": "شما مجوز این درخواست را ندارید.",
+    "NOTHING_CHANGED": "هیچ تغییری صورت نگرفته.",
+    "CATEGORY_WITH_SAME_NAME_EXIST": "دسته بندی با همین عنوان قبلا در این سطح ثبت شده است.",
+    "THREAD_WITH_SAME_NAME_EXIST": "مطلبی با همین عنوان قبلا در دسته مربوطه ثبت شده است."
   }
 }

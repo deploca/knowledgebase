@@ -3,6 +3,7 @@
   "common": {
     "app-name": "Knowledgebase",
     "language": "Language",
+    "home": "Home",
     "return": "Return",
     "copyright": "Developed by Deploca",
     "edit": "Edit",
@@ -58,5 +59,10 @@
     }
   },
   "errors": {
+    "ERROR_HAPPEND": "Error happened",
+    "NOT_ALLOWED": "You are not allowed.",
+    "NOTHING_CHANGED": "Nothing changed due to this request.",
+    "CATEGORY_WITH_SAME_NAME_EXIST": "A category with the same name already exist.",
+    "THREAD_WITH_SAME_NAME_EXIST": "A thread with the same name already exist."
   }
 }

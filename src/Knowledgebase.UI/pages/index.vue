@@ -2,14 +2,15 @@
   <b-row>
     <b-col>
       <div>
-        <div class="py-2">{{$t('category.root')}}</div>
+        <div class="d-flex justify-content-between align-items-center">
+          <h5><b-icon icon="folder" /> {{$t('category.root')}}</h5>
+          <b-button variant="primary" class="mb-2" @click="uiNewCategory">
+            <b-icon icon="plus"></b-icon> {{$t('category.new-sub')}}
+          </b-button>
+        </div>
         <b-list-group>
           <CategoryItem v-for="i in categories" :key="i.id" :data="i" />
         </b-list-group>
-        <br />
-        <b-button variant="primary" class="mb-2" @click="uiNewCategory">
-          <b-icon icon="plus"></b-icon> {{$t('category.new-sub')}}
-        </b-button>
       </div>
     </b-col>
     <b-col cols="4">
@@ -40,6 +41,8 @@
           var data = { parentCategoryId: null, title };
           this.newCategory(data).then(r => {
             this.$router.push(`/category/${r}`)
+          }).catch(e => {
+            e.showNotification(this)
           })
         }
       }

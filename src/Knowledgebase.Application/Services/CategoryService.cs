@@ -30,6 +30,9 @@ namespace Knowledgebase.Application.Services
                 }
             }
 
+            // sort
+            q = q.OrderBy(x => x.Title);
+
             return q.Select(x => new CategoryBrief
             {
                 Id = x.Id,
@@ -58,7 +61,7 @@ namespace Knowledgebase.Application.Services
                         ParentCategoryId = y.ParentCategoryId,
                         SubCategoriesCount = y.SubCategories.Count,
                         ThreadsCount = y.Threads.Count,
-                    }).ToList(),
+                    }).OrderBy(y => y.Title).ToList(),
                     Threads = x.Threads.Select(y => new Models.Thread.ThreadBrief
                     {
                         Id = y.Id,
@@ -68,8 +71,8 @@ namespace Knowledgebase.Application.Services
                         {
                             Id = z.TagId,
                             Name = z.Tag.Name,
-                        }).ToList()
-                    }).ToList()
+                        }).OrderBy(z => z.Name).ToList()
+                    }).OrderBy(y => y.Title).ToList()
                 }).FirstOrDefault();
 
             // calculate parent categories
@@ -99,7 +102,7 @@ namespace Knowledgebase.Application.Services
             var hasCategoryWithSameName = _categoryRepository.GetAll()
                 .Where(x => x.ParentCategoryId == input.ParentCategoryId && x.Title == input.Title).Any();
             if (hasCategoryWithSameName)
-                throw new Exception("A category with the same name exists.");
+                throw new Exceptions.BadRequestException("CATEGORY_WITH_SAME_NAME_EXIST");
 
             // build hierarchy
             var hierarchy = "";

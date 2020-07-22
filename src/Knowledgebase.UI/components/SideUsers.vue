@@ -13,7 +13,7 @@
         <b-badge>12</b-badge>
       </b-list-group-item>
       <b-list-group-item class="d-flex align-items-center">
-        <b-avatar variant="info" src="https://placekitten.com/300/300" class="mr-3"></b-avatar>
+        <b-avatar variant="info" class="mr-3"></b-avatar>
         <span class="mr-auto">Super Kitty</span>
         <b-badge>9</b-badge>
       </b-list-group-item>

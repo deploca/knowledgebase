@@ -33,25 +33,13 @@
     </b-col>
     <b-col cols="4">
       <div>
-        <b-card>
-          <b-card-title title-tag="h5">
-            <b-icon icon="filter-right" /> {{$t('thread.map')}}
-          </b-card-title>
-          <b-card-text>
-            <div v-for="c,ci in category.parentCategories" :key="c.id">
-              <span v-if="ci > 0">
-                <b-icon icon="blank" v-for="i,ii in (new Array(ci-1))" :key="ii" />
-                <b-icon icon="arrow90deg-up" />
-              </span>
-              <b-link :to="`/category/${c.id}`">{{c.name}}</b-link>
-            </div>
-            <div v-for="c,ci in category.siblingCategories" :key="c.id">
-              <b-icon icon="blank" v-for="i,ii in (new Array((category.parentCategories.length > 0 ? category.parentCategories.length : 1) - 1))" :key="ii" />
-              <b-icon icon="folder" />
-              <b-link :to="`/category/${c.id}`">{{c.name}}</b-link>
-            </div>
-          </b-card-text>
-        </b-card>
+        <StructureMap
+          :parents="category.parentCategories"
+          :siblings="category.siblingCategories"
+          parentsRouteBase="/category/"
+          siblingsRouteBase="/category/"
+          siblingsIcon="folder"
+          currentId="categoryId" />
       </div>
     </b-col>
   </b-row>
@@ -82,6 +70,8 @@
           var data = { parentCategoryId: this.categoryId, title };
           this.newCategory(data).then(r => {
             this.$router.push(`/category/${r}`)
+          }).catch(e => {
+            e.showNotification(this)
           })
         }
       },
