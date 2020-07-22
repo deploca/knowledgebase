@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Knowledgebase.UnitOfWork;
-using Knowledgebase.Models.Thread;
+using Knowledgebase.Models;
 using Knowledgebase.Models.Tag;
+using Knowledgebase.Models.Thread;
+using Knowledgebase.Models.Category;
 
 namespace Knowledgebase.Application.Services
 {
@@ -13,12 +15,14 @@ namespace Knowledgebase.Application.Services
         private readonly IUnitOfWork _uow;
         private readonly IRepository<Entities.Thread> _threadRepository;
         private readonly IRepository<Entities.ThreadContent> _threadContentRepository;
+        private readonly IRepository<Entities.Category> _categoryRepository;
         private readonly IRepository<Entities.Tag> _tagRepository;
         public ThreadService(IUnitOfWork uow)
         {
             _uow = uow;
             _threadRepository = uow.GetRepository<Entities.Thread>();
             _threadContentRepository = uow.GetRepository<Entities.ThreadContent>();
+            _categoryRepository = uow.GetRepository<Entities.Category>();
             _tagRepository = uow.GetRepository<Entities.Tag>();
         }
 
@@ -52,7 +56,7 @@ namespace Knowledgebase.Application.Services
 
         public ThreadDetails GetDetails(Guid id)
         {
-            return _threadRepository.GetAll()
+            var data = _threadRepository.GetAll()
                 .Where(x => x.Id == id)
                 .Select(x => new ThreadDetails
                 {
@@ -60,6 +64,7 @@ namespace Knowledgebase.Application.Services
                     CreatedAt = x.CreatedAt,
                     UpdatedAt = x.UpdatedAt,
                     Title = x.Title,
+                    HierarchyString = (x.Category.ParentCategoryId.HasValue ? x.Category.Hierarchy + ";" : "") + x.CategoryId.ToString(),
                     Contents = x.Contents.OrderByDescending(c => c.CreatedAt)
                         .Select(c => new ThreadContentDetails
                         {
@@ -70,18 +75,38 @@ namespace Knowledgebase.Application.Services
                         }).FirstOrDefault(),
                     Versions = x.Contents.OrderByDescending(c => c.CreatedAt)
                         .Select(c => new ThreadContentBrief { Id = c.Id, CreatedAt = c.CreatedAt }).ToList(),
-                    Category = new Models.Category.CategoryBrief
+                    Category = new CategoryBrief
                     {
                         Id = x.CategoryId,
                         Title = x.Category.Title,
                     },
-                    Tags = x.Tags.Select(y => new Models.Tag.TagBrief
+                    Tags = x.Tags.Select(y => new TagBrief
                     {
                         Id = y.TagId,
                         Name = y.Tag.Name
                     }).ToList(),
                 })
                 .FirstOrDefault();
+
+            // calculate parent categories
+            if (string.IsNullOrWhiteSpace(data.HierarchyString) == false)
+            {
+                var hierarchyIds = data.HierarchyString.Split(';').Select(x => Guid.Parse(x)).ToList();
+                data.ParentCategories = _categoryRepository.GetAll()
+                    .Where(x => hierarchyIds.Contains(x.Id))
+                    .Select(x => new IdNameDto(x.Id, x.Title)).ToList()
+                    .OrderBy(x => hierarchyIds.IndexOf(x.Id)).ToList();
+            }
+            else
+                data.ParentCategories = new List<IdNameDto>();
+
+            // calculate sibling threads
+            data.SiblingThreads = _threadRepository.GetAll()
+                .Where(x => x.CategoryId == data.Category.Id)
+                .OrderBy(x => x.Title)
+                .Select(x => new IdNameDto(x.Id, x.Title)).ToList();
+
+            return data;
         }
 
         public async Task<Guid> Create(ThreadCreate input)

@@ -18,14 +18,19 @@ namespace Knowledgebase.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCategories()
+        public IActionResult GetCategories(string parent_id)
         {
-            //var data = new List<CategoryBrief>()
-            //{
-            //    new CategoryBrief { Id = Guid.NewGuid(), Title = "سیستم عامل لینوکس" },
-            //    new CategoryBrief { Id = Guid.NewGuid(), Title = "آشنایی، نصب و کار با داکر" },
-            //};
-            var data = _categoryService.GetAll();
+            var data = _categoryService.GetAll(new CategorySearch
+            {
+                ParentId = parent_id
+            });
+            return Ok(data);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetCategoryDetails(Guid id)
+        {
+            var data = _categoryService.GetDetails(id);
             return Ok(data);
         }
 

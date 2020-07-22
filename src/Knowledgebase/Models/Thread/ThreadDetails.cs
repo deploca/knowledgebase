@@ -12,5 +12,8 @@ namespace Knowledgebase.Models.Thread
         public Category.CategoryBrief Category { get; set; }
         public ICollection<ThreadContentBrief> Versions { get; set; }
         public ICollection<Tag.TagBrief> Tags { get; set; }
+        public string HierarchyString { get; set; }
+        public ICollection<IdNameDto> ParentCategories { get; set; }
+        public ICollection<IdNameDto> SiblingThreads { get; set; }
     }
 }

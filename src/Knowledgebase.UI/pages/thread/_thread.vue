@@ -1,93 +1,127 @@
 <template>
-  <div v-if="threadDetails">
-    <div>
-      <div class="mb-2" v-if="!titleEditMode" v-b-hover="(isHovered) => titleEditButtonVisible = isHovered">
-        <h4 class="d-inline m-0">{{threadDetails.title}}</h4>
-        <b-link class="ml-4" @click="titleEditToggle()" v-if="titleEditButtonVisible"><b-icon icon="pencil" /></b-link>
-      </div>
-      <b-input-group v-if="titleEditMode">
-        <b-form-input v-model="titleEditValue"></b-form-input>
-        <b-input-group-append>
-          <b-button variant="success" @click="updateTitle()">Update</b-button>
-          <b-button variant="danger" @click="titleEditToggle()">Cancel</b-button>
-        </b-input-group-append>
-      </b-input-group>
-      <!--<b-icon icon="person" /> مدیر سیستم |-->
-      <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
-      <br />
-      <b-icon icon="hash" />
-      <b-badge v-for="i in threadDetails.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
-    </div>
-    <hr />
-    <div class="d-flex justify-content-between mb-2">
-      <div v-if="!contentsEditMode">
-        <b-form inline>
-          <b-button variant="primary"
-                    @click="contentsEditToggle()"
-                    :disabled="selectedThreadContentVersionId != threadDetails.latestVersionContents.id">
-            <b-icon icon="pencil"></b-icon> {{$t('common.edit')}}
+  <b-row v-if="threadDetails">
+    <b-col>
+      <div>
+        <div class="mb-2" v-if="!titleEditMode" v-b-hover="(isHovered) => titleEditButtonVisible = isHovered">
+          <h4 class="d-inline m-0">{{threadDetails.title}}</h4>
+          <b-link class="ml-4" @click="titleEditToggle()" v-if="titleEditButtonVisible"><b-icon icon="pencil" /></b-link>
+        </div>
+        <b-input-group v-if="titleEditMode">
+          <b-form-input v-model="titleEditValue"></b-form-input>
+          <b-input-group-append>
+            <b-button variant="success" @click="updateTitle()">Update</b-button>
+            <b-button variant="danger" @click="titleEditToggle()">Cancel</b-button>
+          </b-input-group-append>
+        </b-input-group>
+        <!--<b-icon icon="person" /> مدیر سیستم |-->
+        <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
+        <hr />
+        <div class="d-flex justify-content-between mb-2">
+          <div v-if="!contentsEditMode">
+            <b-form inline>
+              <b-button variant="primary"
+                        @click="contentsEditToggle()"
+                        :disabled="selectedThreadContentVersionId != threadDetails.latestVersionContents.id">
+                <b-icon icon="pencil"></b-icon> {{$t('common.edit')}}
+              </b-button>
+              <b-input-group :prepend="$t('thread.version')" class="ml-2">
+                <b-form-select v-model="selectedThreadContentVersionId"
+                               :options="uiThreadVersions"
+                               @change="onThreadVersionChange">
+                </b-form-select>
+              </b-input-group>
+            </b-form>
+          </div>
+          <div v-else>
+            <b-button variant="success" @click="updateContents()">
+              <b-icon icon="check2"></b-icon> {{$t('common.save-changes')}}
+            </b-button>
+            <b-button variant="danger" @click="contentsEditToggle()">
+              <b-icon icon="x"></b-icon> {{$t('common.cancel')}}
+            </b-button>
+          </div>
+          <b-button variant="warning" @click="$router.push(`/category/${threadDetails.category.id}`)">
+            {{$t('common.return')}} <b-icon icon="arrow-left-circle"></b-icon>
           </b-button>
-          <b-input-group :prepend="$t('thread.version')" class="ml-2">
-            <b-form-select v-model="selectedThreadContentVersionId"
-                           :options="uiThreadVersions"
-                           @change="onThreadVersionChange">
-            </b-form-select>
-          </b-input-group>
-        </b-form>
+        </div>
+        <div>
+          <b-card v-if="!contentsEditMode">
+            <markdown :value="threadDetails.contents.contents" />
+          </b-card>
+          <b-form-textarea v-model="contentsEditValue"
+                           :placeholder="$t('thread.enter-contents')"
+                           rows="3" max-rows="24"
+                           v-else>
+          </b-form-textarea>
+        </div>
       </div>
-      <div v-else>
-        <b-button variant="success" @click="updateContents()">
-          <b-icon icon="check2"></b-icon> {{$t('common.save-changes')}}
-        </b-button>
-        <b-button variant="danger" @click="contentsEditToggle()">
-          <b-icon icon="x"></b-icon> {{$t('common.cancel')}}
-        </b-button>
+    </b-col>
+    <b-col cols="4">
+      <div>
+        <b-card class="mb-2">
+          <b-card-title title-tag="h5">
+            <b-icon icon="hash" /> {{$t('tag.plural')}}
+          </b-card-title>
+          <b-card-text>
+            <b-badge v-for="i in threadDetails.tags" :key="i.id"
+                     variant="primary" class="mr-1"
+                     :to="`/tag/${i.id}`">
+              {{i.name}}
+            </b-badge>
+          </b-card-text>
+        </b-card>
+        <b-card>
+          <b-card-title title-tag="h5">
+            <b-icon icon="filter-right" /> {{$t('thread.map')}}
+          </b-card-title>
+          <b-card-text>
+            <div v-for="c,ci in threadDetails.parentCategories" :key="c.id">
+              <span v-if="ci > 0">
+                <b-icon icon="blank" v-for="i,ii in (new Array(ci-1))" :key="ii" />
+                <b-icon icon="arrow90deg-up" />
+              </span>
+              <b-link :to="`/category/${c.id}`">{{c.name}}</b-link>
+            </div>
+            <div v-for="t,ti in threadDetails.siblingThreads" :key="t.id">
+              <b-icon icon="blank" v-for="i,ii in (new Array(threadDetails.parentCategories.length-1))" :key="ii" />
+              <b-icon icon="files" />
+              <b-link :to="`/thread/${t.id}`">{{t.name}}</b-link>
+            </div>
+          </b-card-text>
+        </b-card>
       </div>
-      <b-button variant="warning" @click="$router.push(`/category/${threadDetails.category.id}`)">
-        {{$t('common.return')}} <b-icon icon="arrow-left-circle"></b-icon>
-      </b-button>
-    </div>
-    <div>
-      <b-card v-if="!contentsEditMode">
-        <markdown :value="threadDetails.contents.contents" />
-      </b-card>
-      <b-form-textarea v-model="contentsEditValue"
-                       :placeholder="$t('thread.enter-contents')"
-                       rows="3" max-rows="24"
-                       v-else>
-      </b-form-textarea>
-    </div>
-    <!--<br /><br />
-    <h5>بحث و گفتگو</h5><hr />
+    </b-col>
+  </b-row>
+  <!--<br /><br />
+  <h5>بحث و گفتگو</h5><hr />
+  <b-media>
+    <template v-slot:aside>
+      <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
+    </template>
+
+    <h5 class="mt-0">Media Title</h5>
+    <p>
+      Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin.
+      Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc
+      ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+    </p>
+    <p>
+      Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque
+      penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+    </p>
+
     <b-media>
       <template v-slot:aside>
         <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
       </template>
 
-      <h5 class="mt-0">Media Title</h5>
-      <p>
-        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin.
-        Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc
-        ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+      <h5 class="mt-0">Nested Media</h5>
+      <p class="mb-0">
+        Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in
+        faucibus.
       </p>
-      <p>
-        Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque
-        penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      </p>
-
-      <b-media>
-        <template v-slot:aside>
-          <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
-        </template>
-
-        <h5 class="mt-0">Nested Media</h5>
-        <p class="mb-0">
-          Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in
-          faucibus.
-        </p>
-      </b-media>
-    </b-media>-->
-  </div>
+    </b-media>
+  </b-media>-->
 </template>
 
 <script>

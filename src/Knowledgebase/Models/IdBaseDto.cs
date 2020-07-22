@@ -8,5 +8,12 @@ namespace Knowledgebase.Models
     {
         [Required]
         public Guid Id { get; set; }
+
+
+        public IdBaseDto() { }
+        public IdBaseDto(Guid id)
+        {
+            Id = id;
+        }
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <SideTags />
-    <SideCategories />
+    <!--<SideCategories />-->
     <SideUsers />
   </div>
 </template>

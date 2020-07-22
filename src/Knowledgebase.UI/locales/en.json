@@ -17,6 +17,7 @@
     "title": "Title",
     "contents": "Contents",
     "version": "Version",
+    "map": "Map",
     "latest-version": "Latest version",
     "enter-title": "Enter title",
     "enter-contents": "Enter contents",

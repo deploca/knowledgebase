@@ -8,6 +8,7 @@ namespace Knowledgebase.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public Guid? ParentCategoryId { get; set; }
+        public string Hierarchy { get; set; }
         public string Title { get; set; }
 
         public virtual Category ParentCategory { get; set; }

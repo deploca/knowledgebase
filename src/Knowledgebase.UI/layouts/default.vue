@@ -2,14 +2,7 @@
   <div :dir="direction" v-if="loaded">
     <AppHeader />
     <b-container fluid="lg">
-      <b-row>
-        <b-col>
-          <nuxt />
-        </b-col>
-        <b-col cols="4">
-          <AppSide />
-        </b-col>
-      </b-row>
+      <nuxt />
     </b-container>
     <AppFooter />
   </div>
@@ -32,14 +25,12 @@
           // first run, goto setup page
           this.$router.push('/admin/setup')
         } else {
-          // start application
-          this.loadCategories();
-          this.loadTags();
-
           // set configurations
           this.$store.commit('SET_LANG', appSettings['Locale'])
           this.$i18n.locale = appSettings['Locale']
 
+          // load initial data
+          this.loadTags();
           this.loaded = true;
         }
       });
@@ -47,7 +38,6 @@
     methods: {
       ...mapActions({
         loadAppSettings: 'appSettings/loadAppSettings',
-        loadCategories: 'category/loadCategories',
         loadTags: 'tag/loadTags',
       })
     }

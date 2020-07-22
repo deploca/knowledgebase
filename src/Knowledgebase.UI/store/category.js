@@ -1,16 +1,29 @@
+import { toQueryString } from '~/plugins/utils'
 
 export const state = {
-  items: []
+  items: [],
+  details: null,
 }
 
 export const getters = {
   items: state => state.items,
+  details: state => state.details,
 }
 
 export const actions = {
-  loadCategories({ commit }) {
-    return this.$api.get('/categories').then(r => {
-      commit('setItems', r.data)
+  loadCategories({ commit }, data) {
+    var params = toQueryString(data)
+    return this.$api.get('/categories?' + params).then(r => {
+      commit('set_items', r.data)
+    })
+  },
+  loadSingleCategory({ commit }, parentCategoryId) {
+    return new Promise((resolve, reject) => {
+      commit('set_details', null)
+      this.$api.get('/categories/' + (parentCategoryId || '')).then(r => {
+        commit('set_details', r.data)
+        return resolve(r.data)
+      }).catch(e => reject(e))
     })
   },
   newCategory({ dispatch }, data) {
@@ -24,7 +37,10 @@ export const actions = {
 }
 
 export const mutations = {
-  setItems(state, data) {
+  set_items(state, data) {
     state.items = data;
+  },
+  set_details(state, data) {
+    state.details = data;
   }
 }
