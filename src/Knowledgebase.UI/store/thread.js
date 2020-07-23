@@ -67,6 +67,13 @@ export const actions = {
       }).catch(e => reject(e))
     })
   },
+  deleteThread({ commit }, id) {
+    return new Promise((resolve, reject) => {
+      this.$api.delete('/threads/' + id).then(r => {
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
 }
 
 export const mutations = {

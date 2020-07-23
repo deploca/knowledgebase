@@ -34,6 +34,21 @@ export const actions = {
       }).catch(e => reject(e))
     })
   },
+  updateCategoryTitle({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      this.$api.put('/categories/title', data).then(r => {
+        commit('set_title', data.title)
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
+  deleteCategory({ commit }, id) {
+    return new Promise((resolve, reject) => {
+      this.$api.delete('/categories/' + id).then(r => {
+        return resolve(r.data)
+      }).catch(e => reject(e))
+    })
+  },
 }
 
 export const mutations = {
@@ -42,5 +57,8 @@ export const mutations = {
   },
   set_details(state, data) {
     state.details = data;
-  }
+  },
+  set_title(state, value) {
+    state.details.title = value
+  },
 }

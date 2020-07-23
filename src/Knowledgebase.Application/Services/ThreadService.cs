@@ -321,6 +321,14 @@ namespace Knowledgebase.Application.Services
             await _uow.SaveChangesAsync();
         }
 
+        public async Task DeleteThread(Guid id)
+        {
+            var model = _threadRepository.Find(id);
+            _threadRepository.Remove(model);
+
+            await _uow.SaveChangesAsync();
+        }
+
 
         public ICollection<ThreadContentBrief> GetAllContents(Guid threadId)
         {

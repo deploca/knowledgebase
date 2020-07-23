@@ -7,9 +7,13 @@
     "return": "Return",
     "copyright": "Developed by Deploca",
     "edit": "Edit",
+    "delete": "Delete",
+    "delete-confirm-message": "Are you sure to delete this item?",
     "save": "Save",
     "save-changes": "Save Changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "warning": "Warning",
+    "im-sure": "I'm sure"
   },
   "thread": {
     "singular": "Thread",
@@ -21,7 +25,7 @@
     "map": "Map",
     "latest-version": "Latest version",
     "enter-title": "Enter title",
-    "enter-contents": "Enter contents",
+    "edit-title": "Edit title",
     "add-this-as-a-new-tag": "Add this as a new tag",
     "search-or-add-a-new-tag": "Search or add a new tag"
   },
@@ -31,6 +35,7 @@
     "root": "Main categories",
     "sub": "Sub categories",
     "new-sub": "New sub category",
+    "edit-title": "Edit title",
     "enter-title": "Enter title",
     "nothing-found": "Theres no categories"
   },
@@ -62,6 +67,7 @@
     "ERROR_HAPPEND": "Error happened",
     "NOT_ALLOWED": "You are not allowed.",
     "NOTHING_CHANGED": "Nothing changed due to this request.",
+    "CANT_DELETE_BECAUSE_HAS_CHILDREN": "Unable to delete this item because it has children.",
     "CATEGORY_WITH_SAME_NAME_EXIST": "A category with the same name already exist.",
     "THREAD_WITH_SAME_NAME_EXIST": "A thread with the same name already exist."
   }

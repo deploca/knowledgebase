@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Knowledgebase.Entities;
 
 namespace Knowledgebase.UnitOfWork
 {
@@ -15,5 +16,6 @@ namespace Knowledgebase.UnitOfWork
         void BatchInsert(ICollection<TEntity> entities);
 
         void Update(TEntity entity);
+        void Remove(TEntity entity);
     }
 }

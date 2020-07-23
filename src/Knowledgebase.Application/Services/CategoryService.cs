@@ -128,5 +128,34 @@ namespace Knowledgebase.Application.Services
             await _uow.SaveChangesAsync();
             return model.Id;
         }
+
+        public async Task UpdateTitle(CategoryUpdateTitle input)
+        {
+            var model = _categoryRepository.Find(input.Id);
+
+            if (model.Title == input.Title)
+                throw new Exceptions.BadRequestException("NOTHING_CHANGED");
+
+            model.Title = input.Title;
+            model.UpdatedAt = DateTime.UtcNow;
+            _categoryRepository.Update(model);
+
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task Delete(Guid id)
+        {
+            // check if the category has any children
+            var childrenCount = _categoryRepository.GetAll()
+                .Where(x => x.Id == id)
+                .Select(x => x.SubCategories.Count + x.Threads.Count).FirstOrDefault();
+            if (childrenCount > 0)
+                throw new Exceptions.BadRequestException("CANT_DELETE_BECAUSE_HAS_CHILDREN");
+
+            var model = _categoryRepository.Find(id);
+            _categoryRepository.Remove(model);
+
+            await _uow.SaveChangesAsync();
+        }
     }
 }

@@ -41,5 +41,10 @@ namespace Knowledgebase.Persistent
         {
             _set.Update(entity);
         }
+
+        public void Remove(TEntity entity)
+        {
+            _set.Remove(entity);
+        }
     }
 }

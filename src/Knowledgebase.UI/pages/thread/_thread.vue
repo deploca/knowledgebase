@@ -2,19 +2,29 @@
   <b-row v-if="threadDetails">
     <b-col>
       <div>
-        <div class="mb-2" v-if="!titleEditMode" v-b-hover="(isHovered) => titleEditButtonVisible = isHovered">
-          <h4 class="d-inline m-0">{{threadDetails.title}}</h4>
-          <b-link class="ml-4" @click="titleEditToggle()" v-if="titleEditButtonVisible"><b-icon icon="pencil" /></b-link>
+        <div class="mb-2">
+          <div class="d-flex justify-content-between" v-if="!titleEditMode">
+            <h4 class="m-0">{{threadDetails.title}}</h4>
+            <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+              <template v-slot:button-content>
+                <b-icon icon="three-dots-vertical" />
+              </template>
+              <b-dropdown-item @click="titleEditToggle()"><b-icon icon="pencil" /> {{$t('thread.edit-title')}}</b-dropdown-item>
+              <b-dropdown-item @click="remove()"><b-icon icon="trash" variant="danger" /> {{$t('common.delete')}}</b-dropdown-item>
+            </b-dropdown>
+          </div>
+          <b-input-group v-else>
+            <b-form-input v-model="titleEditValue"></b-form-input>
+            <b-input-group-append>
+              <b-button variant="success" @click="updateTitle()">{{$t('common.save-changes')}}</b-button>
+              <b-button variant="danger" @click="titleEditToggle()">{{$t('common.cancel')}}</b-button>
+            </b-input-group-append>
+          </b-input-group>
         </div>
-        <b-input-group v-if="titleEditMode">
-          <b-form-input v-model="titleEditValue"></b-form-input>
-          <b-input-group-append>
-            <b-button variant="success" @click="updateTitle()">Update</b-button>
-            <b-button variant="danger" @click="titleEditToggle()">Cancel</b-button>
-          </b-input-group-append>
-        </b-input-group>
-        <!--<b-icon icon="person" /> مدیر سیستم |-->
-        <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
+        <div>
+          <!--<b-icon icon="person" /> مدیر سیستم |-->
+          <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
+        </div>
         <hr />
         <div class="d-flex justify-content-between mb-2">
           <div v-if="!contentsEditMode">
@@ -40,7 +50,7 @@
               <b-icon icon="x"></b-icon> {{$t('common.cancel')}}
             </b-button>
           </div>
-          <b-button variant="warning" @click="$router.push(`/category/${threadDetails.category.id}`)">
+          <b-button variant="warning" @click="back">
             {{$t('common.return')}} <b-icon icon="arrow-left-circle"></b-icon>
           </b-button>
         </div>
@@ -123,7 +133,6 @@
       }
     },
     data: () => ({
-      titleEditButtonVisible: false,
       titleEditMode: false,
       titleEditValue: '',
       contentsEditMode: false,
@@ -141,6 +150,7 @@
         loadSingleThreadContents: 'thread/loadSingleThreadContents',
         updateThreadTitle: 'thread/updateThreadTitle',
         updateThreadContents: 'thread/updateThreadContents',
+        deleteThread: 'thread/deleteThread',
       }),
       titleEditToggle() {
         this.titleEditValue = this.threadDetails.title
@@ -177,6 +187,28 @@
       },
       onThreadVersionChange(value) {
         this.loadSingleThreadContents(value || 'latest')
+      },
+      remove() {
+        this.$bvModal.msgBoxConfirm(this.$t('common.delete-confirm-message'), {
+          title: this.$t('common.warning'),
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: this.$t('common.im-sure'),
+          cancelTitle: this.$t('common.cancel'),
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        }).then(result => {
+          if (result === true) {
+            this.deleteThread(this.threadId).then(r => {
+              this.back()
+            })
+          }
+        })
+      },
+      back() {
+        this.$router.push(`/category/${this.threadDetails.category.id}`)
       }
     }
   }

@@ -7,9 +7,13 @@
     "return": "بازگشت",
     "copyright": "ساخته شده توسط دیپلوکا",
     "edit": "ویرایش",
+    "delete": "حذف",
+    "delete-confirm-message": "آیا از حذف این مورد اطمینان دارید؟",
     "save": "ذخیره",
     "save-changes": "ذخیره تغییرات",
-    "cancel": "انصراف"
+    "cancel": "انصراف",
+    "warning": "اخطار",
+    "im-sure": "اطمینان دارم"
   },
   "thread": {
     "singular": "مطلب",
@@ -21,7 +25,7 @@
     "map": "نقشه",
     "latest-version": "آخرین نسخه",
     "enter-title": "عنوان مطلب را وارد کنید",
-    "enter-contents": "متن را وارد کنید",
+    "edit-title": "ویرایش عنوان",
     "add-this-as-a-new-tag": "این عبارت را بعنوان یک برچسب جدید ثبت کن",
     "search-or-add-a-new-tag": "جستجو یا افزودن یک برچسب جدید"
   },
@@ -31,6 +35,7 @@
     "root": "دسته های اصلی",
     "sub": "زیر دسته ها",
     "new-sub": "زیر دسته جدید",
+    "edit-title": "ویرایش عنوان",
     "enter-title": "عنوان دسته را وارد کنید",
     "nothing-found": "هیچ دسته ای وجود ندارد"
   },
@@ -62,6 +67,7 @@
     "ERROR_HAPPEND": "بروز خطا",
     "NOT_ALLOWED": "شما مجوز این درخواست را ندارید.",
     "NOTHING_CHANGED": "هیچ تغییری صورت نگرفته.",
+    "CANT_DELETE_BECAUSE_HAS_CHILDREN": "این مورد بعلت داشتن زیر مجموعه قابل حذف نمیباشد",
     "CATEGORY_WITH_SAME_NAME_EXIST": "دسته بندی با همین عنوان قبلا در این سطح ثبت شده است.",
     "THREAD_WITH_SAME_NAME_EXIST": "مطلبی با همین عنوان قبلا در دسته مربوطه ثبت شده است."
   }

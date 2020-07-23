@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Knowledgebase.Models;
 using Knowledgebase.Models.Thread;
 
 namespace Knowledgebase.Api.Controllers
@@ -69,6 +70,13 @@ namespace Knowledgebase.Api.Controllers
         {
             var result = await _threadService.UpdateThreadContents(input);
             return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteThread(Guid id)
+        {
+            await _threadService.DeleteThread(id);
+            return Ok();
         }
 
 
