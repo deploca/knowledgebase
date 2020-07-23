@@ -12,3 +12,16 @@ $font-size-base: .9rem;
 @import 'bootstrap-rtl';
 @import 'bootstrap-overrides';
 @import 'markdown';
+
+
+// custom rtl
+.rtl,
+[dir="rtl"] {
+  .btn .b-icon.bi {
+    vertical-align: middle;
+  }
+
+  .editor-toolbar {
+    direction: rtl;
+  }
+}

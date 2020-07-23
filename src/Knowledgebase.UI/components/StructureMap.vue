@@ -10,7 +10,7 @@
       </div>
       <div v-for="p,pi in parents" :key="p.id">
         <b-icon icon="blank" v-for="i,ii in (new Array(pi+1))" :key="ii" />
-        <b-icon icon="arrow90deg-up" />
+        <b-icon :icon="`arrow-return-${($t('dir') == 'rtl' ? 'left' : 'right')}`" />
         <b-link :to="`${parentsRouteBase}${p.id}`">{{p.name}}</b-link>
       </div>
       <div v-for="s,si in siblings" :key="s.id">

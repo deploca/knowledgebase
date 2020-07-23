@@ -7,12 +7,6 @@
                       :placeholder="$t('thread.enter-title')"
                       required />
       </b-form-group>
-      <b-form-group :label="$t('thread.contents')">
-        <b-form-textarea v-model="model.contents"
-                         :placeholder="$t('thread.enter-contents')"
-                         rows="3" max-rows="6">
-        </b-form-textarea>
-      </b-form-group>
       <b-form-group :label="$t('tag.plural')">
         <multiselect v-model="model.tags"
                      :tag-placeholder="$t('thread.add-this-as-a-new-tag')"
@@ -24,6 +18,9 @@
                      :taggable="true"
                      @tag="addTag">
         </multiselect>
+      </b-form-group>
+      <b-form-group :label="$t('thread.contents')">
+        <Editor v-model="model.contents" />
       </b-form-group>
       <b-button type="submit" variant="primary">{{$t('thread.new')}}</b-button>
       <b-button variant="warning" @click="cancel">{{$t('common.return')}}</b-button>
@@ -42,7 +39,7 @@
     data: () => ({
       model: {
         categoryId: null,
-        contents: '',
+        contents: '# Hello',
         tags: []
       },
       tagsLocal: [],

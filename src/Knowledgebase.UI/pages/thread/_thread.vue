@@ -48,11 +48,7 @@
           <b-card v-if="!contentsEditMode">
             <markdown :value="threadDetails.contents.contents" />
           </b-card>
-          <b-form-textarea v-model="contentsEditValue"
-                           :placeholder="$t('thread.enter-contents')"
-                           rows="3" max-rows="24"
-                           v-else>
-          </b-form-textarea>
+          <Editor v-model="contentsEditValue" v-else />
         </div>
       </div>
     </b-col>

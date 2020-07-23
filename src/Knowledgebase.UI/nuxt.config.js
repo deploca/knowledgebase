@@ -31,6 +31,7 @@ export default {
   */
   css: [
     '~/assets/font-iransans/css/iransans.css',
+    '~/node_modules/font-awesome/css/font-awesome.min.css',
     '~/assets/styles/main.scss'
   ],
   /*
