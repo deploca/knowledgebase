@@ -35,7 +35,7 @@ namespace Knowledgebase.Application.Services
                 .FirstOrDefault();
         }
 
-        public async Task Set(string key, string value)
+        public void Set(string key, string value)
         {
             var model = new Entities.AppSetting
             {
@@ -44,10 +44,9 @@ namespace Knowledgebase.Application.Services
                 Value = value,
             };
             _appSettingRepository.Insert(model);
-            await _uow.SaveChangesAsync();
         }
 
-        public async Task BatchSet(IDictionary<string, string> items)
+        public void BatchSet(IDictionary<string, string> items)
         {
             var keys = items.Keys.ToArray();
 
@@ -66,8 +65,6 @@ namespace Knowledgebase.Application.Services
                 .Select(k => new Entities.AppSetting { Id = Guid.NewGuid(), Key = k, Value = items[k] })
                 .ToArray();
             _appSettingRepository.BatchInsert(newItems);
-
-            await _uow.SaveChangesAsync();
         }
     }
 }

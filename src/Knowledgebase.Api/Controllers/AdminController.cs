@@ -19,9 +19,10 @@ namespace Knowledgebase.Api.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Setup([FromBody] SetupRequest input)
+        [Filters.Transactional]
+        public IActionResult Setup([FromBody] SetupRequest input)
         {
-            await _administrationService.Setup(input);
+            _administrationService.Setup(input);
             return Ok();
         }
     }

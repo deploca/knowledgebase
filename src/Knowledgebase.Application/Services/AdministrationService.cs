@@ -16,7 +16,7 @@ namespace Knowledgebase.Application.Services
             _uow = uow;
         }
 
-        public async Task Setup(SetupRequest input)
+        public void Setup(SetupRequest input)
         {
             // validation
 
@@ -27,18 +27,16 @@ namespace Knowledgebase.Application.Services
                 { AppSettingService.KEY_Locale, input.Locale },
                 { AppSettingService.KEY_CompanyName, input.CompanyName }
             };
-            await appSettingService.BatchSet(settings);
+            appSettingService.BatchSet(settings);
 
             // create admin user
             // ...
 
             // seed data
-            await addSeedData(input.Locale);
-
-            await _uow.SaveChangesAsync();
+            addSeedData(input.Locale);
         }
 
-        private async Task addSeedData(string locale)
+        private void addSeedData(string locale)
         {
             var category1_title = "Knowledgebase usage guide";
             var thread1_title = "Register users in the system";
@@ -55,11 +53,11 @@ namespace Knowledgebase.Application.Services
 
             var categoryService = this.GetService<CategoryService>();
             var threadService = this.GetService<ThreadService>();
-            var category_id = await categoryService.Create(new Models.Category.CategoryCreate
+            var category_id = categoryService.Create(new Models.Category.CategoryCreate
             {
                 Title = category1_title
             });
-            var thread1_id = await threadService.Create(new Models.Thread.ThreadCreate
+            var thread1_id = threadService.Create(new Models.Thread.ThreadCreate
             {
                 CategoryId = category_id,
                 Title = thread1_title,

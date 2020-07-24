@@ -30,6 +30,24 @@ namespace Knowledgebase.Persistent
             return this.SaveChangesAsync(cancellationToken);
         }
 
+        void IUnitOfWork.BeginTransaction()
+        {
+            if (!this.Database.IsInMemory())
+                this.Database.BeginTransaction();
+        }
+
+        void IUnitOfWork.CommitTransaction()
+        {
+            if (!this.Database.IsInMemory())
+                this.Database.CommitTransaction();
+        }
+
+        void IUnitOfWork.RollbackTransaction()
+        {
+            if (!this.Database.IsInMemory())
+                this.Database.RollbackTransaction();
+        }
+
         #endregion
 
         #region Entities

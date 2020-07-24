@@ -112,7 +112,7 @@ namespace Knowledgebase.Application.Services
             return data;
         }
 
-        public async Task<Guid> Create(ThreadCreate input)
+        public Guid Create(ThreadCreate input)
         {
             // validation
             var sameNameExist = _threadRepository.GetAll()
@@ -164,11 +164,10 @@ namespace Knowledgebase.Application.Services
             _threadRepository.Insert(model);
 
             // final
-            await _uow.SaveChangesAsync();
             return model.Id;
         }
 
-        public async Task UpdateThread(ThreadUpdate input)
+        public void UpdateThread(ThreadUpdate input)
         {
             var threadModel = _threadRepository.Find(input.Id);
             var latestContent = _threadContentRepository.GetAll()
@@ -225,11 +224,9 @@ namespace Knowledgebase.Application.Services
             threadModel.UpdatedAt = DateTime.UtcNow;
             threadModel.Tags = tags;
             _threadRepository.Update(threadModel);
-
-            await _uow.SaveChangesAsync();
         }
 
-        public async Task UpdateThreadTitle(ThreadUpdateTitle input)
+        public void UpdateThreadTitle(ThreadUpdateTitle input)
         {
             var threadModel = _threadRepository.Find(input.Id);
 
@@ -239,11 +236,9 @@ namespace Knowledgebase.Application.Services
             threadModel.Title = input.Title;
             threadModel.UpdatedAt = DateTime.UtcNow;
             _threadRepository.Update(threadModel);
-
-            await _uow.SaveChangesAsync();
         }
 
-        public async Task<ThreadContentDetails> UpdateThreadContents(ThreadUpdateContents input)
+        public ThreadContentDetails UpdateThreadContents(ThreadUpdateContents input)
         {
             var threadModel = _threadRepository.Find(input.Id);
             var latestContent = _threadContentRepository.GetAll()
@@ -266,8 +261,6 @@ namespace Knowledgebase.Application.Services
             threadModel.UpdatedAt = DateTime.UtcNow;
             _threadRepository.Update(threadModel);
 
-            await _uow.SaveChangesAsync();
-
             return new ThreadContentDetails
             {
                 Id = threadContentModel.Id,
@@ -277,7 +270,7 @@ namespace Knowledgebase.Application.Services
             };
         }
 
-        public async Task UpdateThreadTags(ThreadUpdateTags input)
+        public void UpdateThreadTags(ThreadUpdateTags input)
         {
             var threadModel = _threadRepository.Find(input.Id);
             var tags = _threadRepository.GetAll().Where(x => x.Id == input.Id)
@@ -317,16 +310,12 @@ namespace Knowledgebase.Application.Services
             threadModel.Tags = tags;
             threadModel.UpdatedAt = DateTime.UtcNow;
             _threadRepository.Update(threadModel);
-
-            await _uow.SaveChangesAsync();
         }
 
-        public async Task DeleteThread(Guid id)
+        public void DeleteThread(Guid id)
         {
             var model = _threadRepository.Find(id);
             _threadRepository.Remove(model);
-
-            await _uow.SaveChangesAsync();
         }
 
 

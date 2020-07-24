@@ -38,44 +38,50 @@ namespace Knowledgebase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateThread([FromBody] ThreadCreate input)
+        [Filters.Transactional]
+        public IActionResult CreateThread([FromBody] ThreadCreate input)
         {
-            var result = await _threadService.Create(input);
+            var result = _threadService.Create(input);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateThread([FromBody] ThreadUpdate input)
+        [Filters.Transactional]
+        public IActionResult UpdateThread([FromBody] ThreadUpdate input)
         {
-            await _threadService.UpdateThread(input);
+            _threadService.UpdateThread(input);
             return Ok();
         }
 
         [HttpPut("title")]
-        public async Task<IActionResult> UpdateThreadTitle([FromBody] ThreadUpdateTitle input)
+        [Filters.Transactional]
+        public IActionResult UpdateThreadTitle([FromBody] ThreadUpdateTitle input)
         {
-            await _threadService.UpdateThreadTitle(input);
+            _threadService.UpdateThreadTitle(input);
             return Ok();
         }
 
         [HttpPut("tags")]
-        public async Task<IActionResult> UpdateThreadTags([FromBody] ThreadUpdateTags input)
+        [Filters.Transactional]
+        public IActionResult UpdateThreadTags([FromBody] ThreadUpdateTags input)
         {
-            await _threadService.UpdateThreadTags(input);
+            _threadService.UpdateThreadTags(input);
             return Ok();
         }
 
         [HttpPut("contents")]
-        public async Task<IActionResult> UpdateThreadContents([FromBody] ThreadUpdateContents input)
+        [Filters.Transactional]
+        public IActionResult UpdateThreadContents([FromBody] ThreadUpdateContents input)
         {
-            var result = await _threadService.UpdateThreadContents(input);
+            var result = _threadService.UpdateThreadContents(input);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteThread(Guid id)
+        [Filters.Transactional]
+        public IActionResult DeleteThread(Guid id)
         {
-            await _threadService.DeleteThread(id);
+            _threadService.DeleteThread(id);
             return Ok();
         }
 

@@ -96,7 +96,7 @@ namespace Knowledgebase.Application.Services
             return data;
         }
 
-        public async Task<Guid> Create(CategoryCreate input)
+        public Guid Create(CategoryCreate input)
         {
             // validation
             var hasCategoryWithSameName = _categoryRepository.GetAll()
@@ -125,11 +125,10 @@ namespace Knowledgebase.Application.Services
                 Title = input.Title
             };
             _categoryRepository.Insert(model);
-            await _uow.SaveChangesAsync();
             return model.Id;
         }
 
-        public async Task UpdateTitle(CategoryUpdateTitle input)
+        public void UpdateTitle(CategoryUpdateTitle input)
         {
             var model = _categoryRepository.Find(input.Id);
 
@@ -139,11 +138,9 @@ namespace Knowledgebase.Application.Services
             model.Title = input.Title;
             model.UpdatedAt = DateTime.UtcNow;
             _categoryRepository.Update(model);
-
-            await _uow.SaveChangesAsync();
         }
 
-        public async Task Delete(Guid id)
+        public void Delete(Guid id)
         {
             // check if the category has any children
             var childrenCount = _categoryRepository.GetAll()
@@ -154,8 +151,6 @@ namespace Knowledgebase.Application.Services
 
             var model = _categoryRepository.Find(id);
             _categoryRepository.Remove(model);
-
-            await _uow.SaveChangesAsync();
         }
     }
 }
