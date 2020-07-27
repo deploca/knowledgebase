@@ -30,6 +30,7 @@
           this.$i18n.locale = appSettings['Locale']
 
           // load initial data
+          this.loadUsers();
           this.loadTags();
           this.loaded = true;
         }
@@ -38,6 +39,7 @@
     methods: {
       ...mapActions({
         loadAppSettings: 'appSettings/loadAppSettings',
+        loadUsers: 'user/loadUsers',
         loadTags: 'tag/loadTags',
       })
     }

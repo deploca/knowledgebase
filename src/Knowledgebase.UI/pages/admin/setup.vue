@@ -23,19 +23,27 @@
                       :description="$t('views.admin.admin-email-desc')"
                       label-cols-sm="4"
                       label-cols-lg="3">
-          <b-form-input v-model="model.adminEmail"
-                        type="email"
-                        required />
+          <b-form-input :value="`${$store.state.auth.user.name} (${$store.state.auth.user.email})`"
+                        disabled />
         </b-form-group>
 
-        <b-form-group :label="$t('views.admin.admin-password')"
-                      :description="$t('views.admin.admin-password-desc')"
-                      label-cols-sm="4"
-                      label-cols-lg="3">
-          <b-form-input v-model="model.adminPassword"
-                        type="password"
-                        required />
-        </b-form-group>
+        <!--<b-form-group :label="$t('views.admin.admin-email')"
+                :description="$t('views.admin.admin-email-desc')"
+                label-cols-sm="4"
+                label-cols-lg="3">
+    <b-form-input v-model="model.adminEmail"
+                  type="email"
+                  required />
+  </b-form-group>
+
+  <b-form-group :label="$t('views.admin.admin-password')"
+                :description="$t('views.admin.admin-password-desc')"
+                label-cols-sm="4"
+                label-cols-lg="3">
+    <b-form-input v-model="model.adminPassword"
+                  type="password"
+                  required />
+  </b-form-group>-->
 
         <div class="mt-4">
           <b-button type="submit" variant="primary">{{$t('views.admin.setup-submit')}}</b-button>
@@ -67,6 +75,11 @@
       }
     }),
     mounted() {
+      // login or create a user for the creator of the application
+      if (this.$auth.loggedIn == false) {
+        this.$auth.loginWith('auth0')
+      }
+
       this.model.locale = this.$store.state.locale
     },
     methods: {

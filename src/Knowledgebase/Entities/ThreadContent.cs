@@ -7,8 +7,10 @@ namespace Knowledgebase.Entities
     {
         public Guid ThreadId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Guid CreatedByUserId { get; set; }
         public string Content { get; set; }
 
+        public virtual AppUser CreatedByUser { get; set; }
         public virtual Thread Thread { get; set; }
     }
 }

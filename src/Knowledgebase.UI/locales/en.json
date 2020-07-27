@@ -13,7 +13,9 @@
     "save-changes": "Save Changes",
     "cancel": "Cancel",
     "warning": "Warning",
-    "im-sure": "I'm sure"
+    "im-sure": "I'm sure",
+    "signin": "Sign In",
+    "signout": "Sign Out"
   },
   "thread": {
     "singular": "Thread",

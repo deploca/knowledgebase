@@ -5,7 +5,8 @@
         <div class="mb-2">
           <div class="d-flex justify-content-between" v-if="!titleEditMode">
             <h4 class="m-0">{{category.title}}</h4><hr />
-            <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+            <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret
+                        v-if="$auth.loggedIn">
               <template v-slot:button-content>
                 <b-icon icon="three-dots-vertical" />
               </template>
@@ -21,7 +22,12 @@
             </b-input-group-append>
           </b-input-group>
         </div>
-        <div class="d-flex justify-content-between">
+        <div>
+          <b-icon icon="clock" /> <time>{{category.createdAt | formatDateTime}}</time> |
+          <b-icon icon="person" /> <b-link :to="`/user-profile/${category.createdByUser.id}`">{{category.createdByUser.name}}</b-link>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-between" v-if="$auth.loggedIn">
           <span>
             <b-button variant="primary" :to="`/thread/new?cid=${categoryId}`">
               <b-icon icon="plus"></b-icon> {{$t('thread.new')}}
@@ -36,6 +42,7 @@
             </b-button>
           </span>
         </div>
+
         <div v-if="category.subCategories.length > 0">
           <div class="py-2">{{$t('category.sub')}}</div>
           <b-list-group>

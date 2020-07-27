@@ -13,7 +13,9 @@
     "save-changes": "ذخیره تغییرات",
     "cancel": "انصراف",
     "warning": "اخطار",
-    "im-sure": "اطمینان دارم"
+    "im-sure": "اطمینان دارم",
+    "signin": "ورود به سیستم",
+    "signout": "خروج از سیستم"
   },
   "thread": {
     "singular": "مطلب",

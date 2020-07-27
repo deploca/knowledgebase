@@ -1,23 +1,26 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Knowledgebase.UnitOfWork;
 using Knowledgebase.Models.Administration;
-using System.Linq;
 
 namespace Knowledgebase.Application.Services
 {
     public class AdministrationService : _ServiceBase
     {
-        private readonly IUnitOfWork _uow;
-        public AdministrationService(IServiceProvider serviceProvider, IUnitOfWork uow)
+        private readonly UtilityServices.AuthService _authService;
+        public AdministrationService(IServiceProvider serviceProvider,
+            UtilityServices.AuthService authService)
             : base(serviceProvider)
         {
-            _uow = uow;
+            _authService = authService;
         }
 
-        public void Setup(SetupRequest input)
+        public async Task Setup(SetupRequest input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             // validation
 
             // save settings
@@ -29,8 +32,23 @@ namespace Knowledgebase.Application.Services
             };
             appSettingService.BatchSet(settings);
 
-            // create admin user
-            // ...
+            //// assign owner role to current user
+            //var _authService = GetService<UtilityServices.AuthService>();
+            //await _authService.AssignRolesToUser(input.AdminExternalUserId,
+            //    new string[] { "deploca:knowledgebase:owner" });
+
+            // create the user
+            var externalUser = await _authService.GetUserInfo(input.AdminExternalUserId);
+            var appUserId = GetService<AppUserService>()
+                .Create(new Models.AppUser.AppUserCreate
+                {
+                    ExternalId = externalUser.UserId,
+                    Picture = externalUser.Picture,
+                    Name = externalUser.FullName,
+                    Email = externalUser.Email,
+                    IsOwner = true
+                });
+            Session.SetAuthenticatedUserId(appUserId);
 
             // seed data
             addSeedData(input.Locale);

@@ -20,9 +20,10 @@ namespace Knowledgebase.Api.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Filters.Transactional]
-        public IActionResult Setup([FromBody] SetupRequest input)
+        public async Task<IActionResult> Setup([FromBody] SetupRequest input)
         {
-            _administrationService.Setup(input);
+            input.AdminExternalUserId = this.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            await _administrationService.Setup(input);
             return Ok();
         }
     }

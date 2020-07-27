@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Auth0.AuthenticationApi" Version="7.0.9" />
+    <PackageReference Include="Auth0.ManagementApi" Version="7.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Knowledgebase\Knowledgebase.csproj" />
   </ItemGroup>
 

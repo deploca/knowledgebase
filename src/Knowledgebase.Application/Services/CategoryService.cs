@@ -8,11 +8,12 @@ using Knowledgebase.Models.Category;
 
 namespace Knowledgebase.Application.Services
 {
-    public class CategoryService
+    public class CategoryService : _ServiceBase
     {
         private readonly IUnitOfWork _uow;
         private readonly IRepository<Entities.Category> _categoryRepository;
-        public CategoryService(IUnitOfWork uow)
+        public CategoryService(IServiceProvider serviceProvider, IUnitOfWork uow)
+            : base(serviceProvider)
         {
             _uow = uow;
             _categoryRepository = uow.GetRepository<Entities.Category>();
@@ -40,6 +41,11 @@ namespace Knowledgebase.Application.Services
                 Title = x.Title,
                 SubCategoriesCount = x.SubCategories.Count,
                 ThreadsCount = x.Threads.Count,
+                CreatedByUser = new Models.AppUser.AppUserBrief
+                {
+                    Id = x.CreatedByUserId,
+                    Name = x.CreatedByUser.Name,
+                },
             }).ToList();
         }
 
@@ -54,6 +60,11 @@ namespace Knowledgebase.Application.Services
                     CreatedAt = x.CreatedAt,
                     ParentCategoryId = x.ParentCategoryId,
                     HierarchyString = x.Hierarchy,
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                     SubCategories = x.SubCategories.Select(y => new CategoryBrief
                     {
                         Id = y.Id,
@@ -61,6 +72,11 @@ namespace Knowledgebase.Application.Services
                         ParentCategoryId = y.ParentCategoryId,
                         SubCategoriesCount = y.SubCategories.Count,
                         ThreadsCount = y.Threads.Count,
+                        CreatedByUser = new Models.AppUser.AppUserBrief
+                        {
+                            Id = y.CreatedByUserId,
+                            Name = y.CreatedByUser.Name,
+                        },
                     }).OrderBy(y => y.Title).ToList(),
                     Threads = x.Threads.Select(y => new Models.Thread.ThreadBrief
                     {
@@ -71,7 +87,12 @@ namespace Knowledgebase.Application.Services
                         {
                             Id = z.TagId,
                             Name = z.Tag.Name,
-                        }).OrderBy(z => z.Name).ToList()
+                        }).OrderBy(z => z.Name).ToList(),
+                        CreatedByUser = new Models.AppUser.AppUserBrief
+                        {
+                            Id = y.CreatedByUserId,
+                            Name = y.CreatedByUser.Name,
+                        },
                     }).OrderBy(y => y.Title).ToList()
                 }).FirstOrDefault();
 
@@ -98,6 +119,9 @@ namespace Knowledgebase.Application.Services
 
         public Guid Create(CategoryCreate input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             // validation
             var hasCategoryWithSameName = _categoryRepository.GetAll()
                 .Where(x => x.ParentCategoryId == input.ParentCategoryId && x.Title == input.Title).Any();
@@ -120,6 +144,7 @@ namespace Knowledgebase.Application.Services
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = Session.AuthenticatedUserId.Value,
                 ParentCategoryId = input.ParentCategoryId,
                 Hierarchy = hierarchy,
                 Title = input.Title
@@ -130,6 +155,9 @@ namespace Knowledgebase.Application.Services
 
         public void UpdateTitle(CategoryUpdateTitle input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var model = _categoryRepository.Find(input.Id);
 
             if (model.Title == input.Title)
@@ -137,11 +165,15 @@ namespace Knowledgebase.Application.Services
 
             model.Title = input.Title;
             model.UpdatedAt = DateTime.UtcNow;
+            model.UpdatedByUserId = Session.AuthenticatedUserId.Value;
             _categoryRepository.Update(model);
         }
 
         public void Delete(Guid id)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             // check if the category has any children
             var childrenCount = _categoryRepository.GetAll()
                 .Where(x => x.Id == id)

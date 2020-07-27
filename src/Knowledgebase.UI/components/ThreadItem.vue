@@ -12,8 +12,8 @@
     </p>-->
 
     <small>
-      <!--<b-icon icon="person" /> مدیر سیستم |-->
       <b-icon icon="clock" /> <time>{{data.createdAt | formatDateTime}}</time> |
+      <b-icon icon="person" /> {{data.createdByUser.name}} |
       <b-icon icon="hash" />
       <b-badge v-for="i in data.tags" :key="i.id" :to="`/tag/${i.id}`" variant="primary" class="mr-1">{{i.name}}</b-badge>
     </small>

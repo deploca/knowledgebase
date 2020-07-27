@@ -13,6 +13,7 @@ namespace Knowledgebase.Models.Thread
         public ICollection<ThreadContentBrief> Versions { get; set; }
         public ICollection<Tag.TagBrief> Tags { get; set; }
         public string HierarchyString { get; set; }
+        public AppUser.AppUserBrief CreatedByUser { get; set; }
         public ICollection<IdNameDto> ParentCategories { get; set; }
         public ICollection<IdNameDto> SiblingThreads { get; set; }
     }

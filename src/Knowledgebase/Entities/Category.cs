@@ -7,10 +7,14 @@ namespace Knowledgebase.Entities
     {
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public Guid CreatedByUserId { get; set; }
+        public Guid? UpdatedByUserId { get; set; }
         public Guid? ParentCategoryId { get; set; }
         public string Hierarchy { get; set; }
         public string Title { get; set; }
 
+        public virtual AppUser CreatedByUser { get; set; }
+        public virtual AppUser UpdatedByUser { get; set; }
         public virtual Category ParentCategory { get; set; }
         public virtual ICollection<Category> SubCategories { get; set; }
         public virtual ICollection<Thread> Threads { get; set; }

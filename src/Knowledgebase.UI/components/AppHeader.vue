@@ -15,6 +15,8 @@
           </b-navbar-nav>-->
           <!-- Right aligned nav items -->
           <b-navbar-nav class="ml-auto">
+            <b-nav-item @click="logout" v-if="$auth.loggedIn">{{$t('common.signout')}}</b-nav-item>
+            <b-nav-item @click="login" v-else>{{$t('common.signin')}}</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -34,6 +36,14 @@
       companyName() {
         return this.appSettings['CompanyName']
       }
+    },
+    methods: {
+      login() {
+        this.$auth.loginWith('auth0')
+      },
+      logout() {
+        this.$auth.logout()
+      },
     }
   }
 </script>

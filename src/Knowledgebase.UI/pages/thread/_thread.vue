@@ -5,7 +5,8 @@
         <div class="mb-2">
           <div class="d-flex justify-content-between" v-if="!titleEditMode">
             <h4 class="m-0">{{threadDetails.title}}</h4>
-            <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret>
+            <b-dropdown variant="link" toggle-class="text-decoration-none" no-caret
+                        v-if="$auth.loggedIn">
               <template v-slot:button-content>
                 <b-icon icon="three-dots-vertical" />
               </template>
@@ -22,19 +23,20 @@
           </b-input-group>
         </div>
         <div>
-          <!--<b-icon icon="person" /> مدیر سیستم |-->
-          <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time>
+          <b-icon icon="clock" /> <time>{{threadDetails.createdAt | formatDateTime}}</time> |
+          <b-icon icon="person" /> <b-link :to="`/user-profile/${threadDetails.createdByUser.id}`">{{threadDetails.createdByUser.name}}</b-link>
         </div>
         <hr />
         <div class="d-flex justify-content-between mb-2">
           <div v-if="!contentsEditMode">
             <b-form inline>
-              <b-button variant="primary"
+              <b-button variant="primary" class="mr-2"
                         @click="contentsEditToggle()"
-                        :disabled="selectedThreadContentVersionId != threadDetails.latestVersionContents.id">
+                        :disabled="selectedThreadContentVersionId != threadDetails.latestVersionContents.id"
+                        v-if="$auth.loggedIn">
                 <b-icon icon="pencil"></b-icon> {{$t('common.edit')}}
               </b-button>
-              <b-input-group :prepend="$t('thread.version')" class="ml-2">
+              <b-input-group :prepend="$t('thread.version')">
                 <b-form-select v-model="selectedThreadContentVersionId"
                                :options="uiThreadVersions"
                                @change="onThreadVersionChange">
@@ -129,7 +131,10 @@
         return this.$route.params.thread;
       },
       uiThreadVersions() {
-        return this.threadDetails.versions.map(x => ({ value: x.id, text: 'user @ ' + this.$dateTime.formatDateTime(x.createdAt) }))
+        return this.threadDetails.versions.map(x => ({
+          value: x.id,
+          text: `${x.createdByUser.name} @ ${this.$dateTime.formatDateTime(x.createdAt)}`
+        }))
       }
     },
     data: () => ({

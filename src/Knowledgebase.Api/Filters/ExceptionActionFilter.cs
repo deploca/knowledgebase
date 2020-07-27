@@ -19,6 +19,7 @@ namespace Knowledgebase.Api.Filters
                 context.HttpContext.Response.StatusCode =
                     isTypeOf(context.Exception, typeof(Exceptions.BadRequestException)) ? (int)HttpStatusCode.BadRequest :
                     isTypeOf(context.Exception, typeof(Exceptions.ForbiddenRequestException)) ? (int)HttpStatusCode.Forbidden :
+                    isTypeOf(context.Exception, typeof(Exceptions.UnauthorizedException)) ? (int)HttpStatusCode.Unauthorized :
                     (int)HttpStatusCode.InternalServerError;
 
                 context.Result = new JsonResult(new

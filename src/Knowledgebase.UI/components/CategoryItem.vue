@@ -12,7 +12,8 @@
 
     <small>
       <b-icon icon="folder" /> {{data.subCategoriesCount}} |
-      <b-icon icon="files" /> {{data.threadsCount}}
+      <b-icon icon="files" /> {{data.threadsCount}} |
+      <b-icon icon="person" /> {{data.createdByUser.name}}
     </small>
   </b-list-group-item>
 </template>

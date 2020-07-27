@@ -1,11 +1,18 @@
-import Vue from 'vue'
-import axios from 'axios'
 
-const api = axios.create({
-  baseURL: (process.env.NODE_ENV == 'development' ? '//localhost:58979' : '') + '/api/',
-});
+export default ({ app, $axios }, inject) => {
+  const api = $axios.create()
+  api.setBaseURL((process.env.NODE_ENV == 'development' ? '//localhost:58979' : '') + '/api/');
 
-export default ({ }, inject) => {
+  // add logged-in user access token to the request
+  api.interceptors.request.use(config => {
+    if (app.$auth && app.$auth.loggedIn)
+      config.headers['common']['Authorization'] = app.$auth.$storage.getState('_token.auth0');
+    return config;
+  }, err => {
+    return Promise.reject(err);
+  })
+
+  // handle response errors
   api.interceptors.response.use(null, err => {
     err.serverStatusCode = err.response.status;
     err.serverMessage = err.response.data.message;
@@ -32,9 +39,6 @@ export default ({ }, inject) => {
 
     return Promise.reject(err);
   })
-  inject('api', api)
-}
 
-export const setApiHeader = (key, value) => {
-  api.defaults.headers.common[key] = value;
+  inject('api', api)
 }

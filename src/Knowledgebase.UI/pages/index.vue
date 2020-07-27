@@ -4,7 +4,7 @@
       <div>
         <div class="d-flex justify-content-between align-items-center">
           <h5><b-icon icon="folder" /> {{$t('category.root')}}</h5>
-          <b-button variant="primary" class="mb-2" @click="uiNewCategory">
+          <b-button variant="primary" class="mb-2" @click="uiNewCategory" v-if="$auth.loggedIn">
             <b-icon icon="plus"></b-icon> {{$t('category.new-sub')}}
           </b-button>
         </div>

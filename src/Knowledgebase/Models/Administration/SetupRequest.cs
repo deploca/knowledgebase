@@ -12,10 +12,6 @@ namespace Knowledgebase.Models.Administration
         [Required]
         public string CompanyName { get; set; }
 
-        [Required]
-        public string AdminEmail { get; set; }
-
-        [Required]
-        public string AdminPassword { get; set; }
+        public string AdminExternalUserId { get; set; }
     }
 }

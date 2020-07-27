@@ -7,5 +7,6 @@ namespace Knowledgebase.Models.Tag
     {
         public string Name { get; set; }
         public int ThreadsCount { get; set; }
+        public AppUser.AppUserBrief CreatedByUser { get; set; }
     }
 }

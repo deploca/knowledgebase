@@ -10,14 +10,15 @@ using Knowledgebase.Models.Category;
 
 namespace Knowledgebase.Application.Services
 {
-    public class ThreadService
+    public class ThreadService : _ServiceBase
     {
         private readonly IUnitOfWork _uow;
         private readonly IRepository<Entities.Thread> _threadRepository;
         private readonly IRepository<Entities.ThreadContent> _threadContentRepository;
         private readonly IRepository<Entities.Category> _categoryRepository;
         private readonly IRepository<Entities.Tag> _tagRepository;
-        public ThreadService(IUnitOfWork uow)
+        public ThreadService(IServiceProvider serviceProvider, IUnitOfWork uow)
+            : base(serviceProvider)
         {
             _uow = uow;
             _threadRepository = uow.GetRepository<Entities.Thread>();
@@ -53,6 +54,11 @@ namespace Knowledgebase.Application.Services
                         Id = y.TagId,
                         Name = y.Tag.Name
                     }).ToList(),
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                 })
                 .ToList();
         }
@@ -75,13 +81,37 @@ namespace Knowledgebase.Application.Services
                             ThreadId = c.ThreadId,
                             CreatedAt = c.CreatedAt,
                             Contents = c.Content,
+                            CreatedByUser = new Models.AppUser.AppUserBrief
+                            {
+                                Id = c.CreatedByUserId,
+                                Name = c.CreatedByUser.Name,
+                            },
                         }).FirstOrDefault(),
                     Versions = x.Contents.OrderByDescending(c => c.CreatedAt)
-                        .Select(c => new ThreadContentBrief { Id = c.Id, CreatedAt = c.CreatedAt }).ToList(),
+                        .Select(c => new ThreadContentBrief
+                        {
+                            Id = c.Id,
+                            CreatedAt = c.CreatedAt,
+                            CreatedByUser = new Models.AppUser.AppUserBrief
+                            {
+                                Id = c.CreatedByUserId,
+                                Name = c.CreatedByUser.Name,
+                            },
+                        }).ToList(),
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                     Category = new CategoryBrief
                     {
                         Id = x.CategoryId,
                         Title = x.Category.Title,
+                        CreatedByUser = new Models.AppUser.AppUserBrief
+                        {
+                            Id = x.Category.CreatedByUserId,
+                            Name = x.Category.CreatedByUser.Name,
+                        },
                     },
                     Tags = x.Tags.Select(y => new TagBrief
                     {
@@ -114,6 +144,9 @@ namespace Knowledgebase.Application.Services
 
         public Guid Create(ThreadCreate input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             // validation
             var sameNameExist = _threadRepository.GetAll()
                 .Where(x => x.CategoryId == input.CategoryId && x.Title == input.Title).Any();
@@ -135,7 +168,13 @@ namespace Knowledgebase.Application.Services
                 // create new tags
                 var newTags = input.Tags.Where(x => x.Id.HasValue == false);
                 var newTagEntities = newTags
-                    .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
+                    .Select(x => new Entities.Tag
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedByUserId = Session.AuthenticatedUserId.Value,
+                        Name = x.Name
+                    })
                     .ToArray();
                 _tagRepository.BatchInsert(newTagEntities);
                 tags.AddRange(newTagEntities.Select(x => new Entities.ThreadTag
@@ -150,12 +189,14 @@ namespace Knowledgebase.Application.Services
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = Session.AuthenticatedUserId.Value,
                 CategoryId = input.CategoryId,
                 Title = input.Title,
                 Contents = new List<Entities.ThreadContent>() {
                     new Entities.ThreadContent {
                         Id = Guid.NewGuid(),
                         CreatedAt = DateTime.UtcNow,
+                        CreatedByUserId = Session.AuthenticatedUserId.Value,
                         Content = input.Contents
                     }
                 },
@@ -169,6 +210,9 @@ namespace Knowledgebase.Application.Services
 
         public void UpdateThread(ThreadUpdate input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var threadModel = _threadRepository.Find(input.Id);
             var latestContent = _threadContentRepository.GetAll()
                 .Where(x => x.ThreadId == input.Id)
@@ -185,6 +229,7 @@ namespace Knowledgebase.Application.Services
                     Id = Guid.NewGuid(),
                     ThreadId = input.Id,
                     CreatedAt = DateTime.UtcNow,
+                    CreatedByUserId = Session.AuthenticatedUserId.Value,
                     Content = input.Contents,
                 });
             }
@@ -206,7 +251,13 @@ namespace Knowledgebase.Application.Services
                 // add new not-existing tags
                 var newNotExistingTags = input.Tags.Where(x => x.Id.HasValue == false);
                 var newNotExistingTagEntities = newNotExistingTags
-                    .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
+                    .Select(x => new Entities.Tag
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedByUserId = Session.AuthenticatedUserId.Value,
+                        Name = x.Name
+                    })
                     .ToArray();
                 _tagRepository.BatchInsert(newNotExistingTagEntities);
                 tags.AddRange(newNotExistingTagEntities.Select(x => new Entities.ThreadTag
@@ -222,12 +273,16 @@ namespace Knowledgebase.Application.Services
 
             threadModel.Title = input.Title;
             threadModel.UpdatedAt = DateTime.UtcNow;
+            threadModel.UpdatedByUserId = Session.AuthenticatedUserId.Value;
             threadModel.Tags = tags;
             _threadRepository.Update(threadModel);
         }
 
         public void UpdateThreadTitle(ThreadUpdateTitle input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var threadModel = _threadRepository.Find(input.Id);
 
             if (threadModel.Title == input.Title)
@@ -235,11 +290,15 @@ namespace Knowledgebase.Application.Services
 
             threadModel.Title = input.Title;
             threadModel.UpdatedAt = DateTime.UtcNow;
+            threadModel.UpdatedByUserId = Session.AuthenticatedUserId.Value;
             _threadRepository.Update(threadModel);
         }
 
         public ThreadContentDetails UpdateThreadContents(ThreadUpdateContents input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var threadModel = _threadRepository.Find(input.Id);
             var latestContent = _threadContentRepository.GetAll()
                 .Where(x => x.ThreadId == input.Id)
@@ -254,11 +313,13 @@ namespace Knowledgebase.Application.Services
                 Id = Guid.NewGuid(),
                 ThreadId = input.Id,
                 CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = Session.AuthenticatedUserId.Value,
                 Content = input.Contents,
             };
             _threadContentRepository.Insert(threadContentModel);
 
             threadModel.UpdatedAt = DateTime.UtcNow;
+            threadModel.UpdatedByUserId = Session.AuthenticatedUserId.Value;
             _threadRepository.Update(threadModel);
 
             return new ThreadContentDetails
@@ -272,6 +333,9 @@ namespace Knowledgebase.Application.Services
 
         public void UpdateThreadTags(ThreadUpdateTags input)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var threadModel = _threadRepository.Find(input.Id);
             var tags = _threadRepository.GetAll().Where(x => x.Id == input.Id)
                 .SelectMany(x => x.Tags).ToList();
@@ -293,7 +357,13 @@ namespace Knowledgebase.Application.Services
                 // add new not-existing tags
                 var newNotExistingTags = input.Tags.Where(x => x.Id.HasValue == false);
                 var newNotExistingTagEntities = newNotExistingTags
-                    .Select(x => new Entities.Tag { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow, Name = x.Name })
+                    .Select(x => new Entities.Tag
+                    {
+                        Id = Guid.NewGuid(),
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedByUserId = Session.AuthenticatedUserId.Value,
+                        Name = x.Name
+                    })
                     .ToArray();
                 _tagRepository.BatchInsert(newNotExistingTagEntities);
                 tags.AddRange(newNotExistingTagEntities.Select(x => new Entities.ThreadTag
@@ -309,11 +379,15 @@ namespace Knowledgebase.Application.Services
 
             threadModel.Tags = tags;
             threadModel.UpdatedAt = DateTime.UtcNow;
+            threadModel.UpdatedByUserId = Session.AuthenticatedUserId.Value;
             _threadRepository.Update(threadModel);
         }
 
         public void DeleteThread(Guid id)
         {
+            // check user and permissions
+            Session.EnsureAuthenticated();
+
             var model = _threadRepository.Find(id);
             _threadRepository.Remove(model);
         }
@@ -328,6 +402,11 @@ namespace Knowledgebase.Application.Services
                 {
                     Id = x.Id,
                     CreatedAt = x.CreatedAt,
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                 }).ToList();
         }
 
@@ -340,7 +419,12 @@ namespace Knowledgebase.Application.Services
                     Id = x.Id,
                     ThreadId = x.ThreadId,
                     CreatedAt = x.CreatedAt,
-                    Contents = x.Content
+                    Contents = x.Content,
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                 }).FirstOrDefault();
         }
 
@@ -353,7 +437,12 @@ namespace Knowledgebase.Application.Services
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    ThreadsCount = x.Threads.Count
+                    ThreadsCount = x.Threads.Count,
+                    CreatedByUser = new Models.AppUser.AppUserBrief
+                    {
+                        Id = x.CreatedByUserId,
+                        Name = x.CreatedByUser.Name,
+                    },
                 }).ToList();
         }
 
