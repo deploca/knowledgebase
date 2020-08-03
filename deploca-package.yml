@@ -1,0 +1,7 @@
+version: '1.0'
+
+services:
+    ui-and-api:
+        source: ui-and-api
+        external: yes
+        root_url: yes
