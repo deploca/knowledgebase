@@ -37,6 +37,15 @@ namespace Knowledgebase.Api
             // authentication
             RegisterAuthentication(services);
 
+            // serve client and server together in production
+            if (env.IsProduction())
+            {
+                services.AddSpaStaticFiles(o =>
+                {
+                    o.RootPath = "wwwroot";
+                });
+            }
+
             // asp.net
             services.AddHttpContextAccessor();
             services.AddCors();
@@ -70,6 +79,16 @@ namespace Knowledgebase.Api
             {
                 endpoints.MapControllers();
             });
+
+            // serve client and server together in production
+            if (env.IsProduction())
+            {
+                app.UseSpaStaticFiles();
+                app.UseSpa(o =>
+                {
+                    o.Options.SourcePath = "wwwroot";
+                });
+            }
         }
 
 
