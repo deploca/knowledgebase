@@ -1,0 +1,76 @@
+{
+  "dir": "ltr",
+  "common": {
+    "app-name": "Knowledgebase",
+    "language": "Language",
+    "home": "Home",
+    "return": "Return",
+    "copyright": "Developed by Deploca",
+    "edit": "Edit",
+    "delete": "Delete",
+    "delete-confirm-message": "Are you sure to delete this item?",
+    "save": "Save",
+    "save-changes": "Save Changes",
+    "cancel": "Cancel",
+    "warning": "Warning",
+    "im-sure": "I'm sure",
+    "signin": "Sign In",
+    "signout": "Sign Out"
+  },
+  "thread": {
+    "singular": "Thread",
+    "plural": "Threads",
+    "new": "New Thread",
+    "title": "Title",
+    "contents": "Contents",
+    "version": "Version",
+    "map": "Map",
+    "latest-version": "Latest version",
+    "enter-title": "Enter title",
+    "edit-title": "Edit title",
+    "add-this-as-a-new-tag": "Add this as a new tag",
+    "search-or-add-a-new-tag": "Search or add a new tag"
+  },
+  "category": {
+    "singular": "Category",
+    "plural": "Categories",
+    "root": "Main categories",
+    "sub": "Sub categories",
+    "new-sub": "New sub category",
+    "edit-title": "Edit title",
+    "enter-title": "Enter title",
+    "nothing-found": "Theres no categories"
+  },
+  "tag": {
+    "singular": "Tag",
+    "plural": "Tags",
+    "nothing-found": "Theres no tags"
+  },
+  "user": {
+    "singular": "User",
+    "plural": "Users",
+    "actives": "Active users"
+  },
+  "views": {
+    "admin": {
+      "setup": "System Installation",
+      "setup-submit": "Submit and Start",
+      "company-name": "Company Name",
+      "company-name-desc": "Name of the Company, Organization or your Name.",
+      "admin-email": "Admininstrator's Email",
+      "admin-email-desc": "All the system event and notifications will be send to this email address.",
+      "admin-password": "Admininstrator's Password",
+      "admin-password-desc": "Dont forget this email and password.",
+      "language": "System Language",
+      "language-desc": "Language of all of the system"
+    }
+  },
+  "errors": {
+    "ERROR_HAPPEND": "Error happened",
+    "NOT_ALLOWED": "You are not allowed.",
+    "NOTHING_CHANGED": "Nothing changed due to this request.",
+    "CANT_DELETE_BECAUSE_HAS_CHILDREN": "Unable to delete this item because it has children.",
+    "CATEGORY_WITH_SAME_NAME_EXIST": "A category with the same name already exist.",
+    "THREAD_WITH_SAME_NAME_EXIST": "A thread with the same name already exist."
+  }
+}

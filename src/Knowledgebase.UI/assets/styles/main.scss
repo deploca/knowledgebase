@@ -1,0 +1,27 @@
+// overrides
+//$body-bg: #eee;
+//$font-family-base: "IRANSans", sans-serif !default;
+//$font-family-alt: "IRANSans", sans-serif !default;
+$font-size-base: .9rem;
+
+// Bootstrap and its default variables
+@import '../../node_modules/bootstrap/scss/bootstrap';
+// BootstrapVue and its default variables
+@import '../../node_modules/bootstrap-vue/src/index.scss';
+
+@import 'bootstrap-rtl';
+@import 'bootstrap-overrides';
+@import 'markdown';
+
+
+// custom rtl
+.rtl,
+[dir="rtl"] {
+  .btn .b-icon.bi {
+    vertical-align: middle;
+  }
+
+  .editor-toolbar {
+    direction: rtl;
+  }
+}

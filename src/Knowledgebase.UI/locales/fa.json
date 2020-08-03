@@ -1,0 +1,76 @@
+{
+  "dir": "rtl",
+  "common": {
+    "app-name": "پایگاه دانش",
+    "language": "زبان",
+    "home": "خانه",
+    "return": "بازگشت",
+    "copyright": "ساخته شده توسط دیپلوکا",
+    "edit": "ویرایش",
+    "delete": "حذف",
+    "delete-confirm-message": "آیا از حذف این مورد اطمینان دارید؟",
+    "save": "ذخیره",
+    "save-changes": "ذخیره تغییرات",
+    "cancel": "انصراف",
+    "warning": "اخطار",
+    "im-sure": "اطمینان دارم",
+    "signin": "ورود به سیستم",
+    "signout": "خروج از سیستم"
+  },
+  "thread": {
+    "singular": "مطلب",
+    "plural": "مطالب",
+    "new": "مطلب جدید",
+    "title": "عنوان",
+    "contents": "متن",
+    "version": "نسخه",
+    "map": "نقشه",
+    "latest-version": "آخرین نسخه",
+    "enter-title": "عنوان مطلب را وارد کنید",
+    "edit-title": "ویرایش عنوان",
+    "add-this-as-a-new-tag": "این عبارت را بعنوان یک برچسب جدید ثبت کن",
+    "search-or-add-a-new-tag": "جستجو یا افزودن یک برچسب جدید"
+  },
+  "category": {
+    "singular": "دسته بندی",
+    "plural": "دسته بندی ها",
+    "root": "دسته های اصلی",
+    "sub": "زیر دسته ها",
+    "new-sub": "زیر دسته جدید",
+    "edit-title": "ویرایش عنوان",
+    "enter-title": "عنوان دسته را وارد کنید",
+    "nothing-found": "هیچ دسته ای وجود ندارد"
+  },
+  "tag": {
+    "singular": "برچسب",
+    "plural": "برچسب ها",
+    "nothing-found": "هیچ برچسبی وجود ندارد"
+  },
+  "user": {
+    "singular": "کاربر",
+    "plural": "کاربران",
+    "actives": "کاربران فعال"
+  },
+  "views": {
+    "admin": {
+      "setup": "نصب برنامه",
+      "setup-submit": "ثبت اطلاعات و ورود به سیستم",
+      "company-name": "نام شرکت",
+      "company-name-desc": "نام شرکت، موسسه یا شخصی که نرم افزار متعلق به اوست.",
+      "admin-email": "آدرس ایمیل مدیر سیستم",
+      "admin-email-desc": "آدرس ایمیل مدیر سیستم. تمام رویدادهای سیستم نیز به این ایمیل ارسال میشود.",
+      "admin-password": "کلمه عبور مدیر سیستم",
+      "admin-password-desc": "کلمه عبور مدیر سیستم. برای مدیریت سیستم این ایمیل و کلمه عبور را فراموش نکنید.",
+      "language": "زبان سیستم",
+      "language-desc": "زبان سیستم"
+    }
+  },
+  "errors": {
+    "ERROR_HAPPEND": "بروز خطا",
+    "NOT_ALLOWED": "شما مجوز این درخواست را ندارید.",
+    "NOTHING_CHANGED": "هیچ تغییری صورت نگرفته.",
+    "CANT_DELETE_BECAUSE_HAS_CHILDREN": "این مورد بعلت داشتن زیر مجموعه قابل حذف نمیباشد",
+    "CATEGORY_WITH_SAME_NAME_EXIST": "دسته بندی با همین عنوان قبلا در این سطح ثبت شده است.",
+    "THREAD_WITH_SAME_NAME_EXIST": "مطلبی با همین عنوان قبلا در دسته مربوطه ثبت شده است."
+  }
+}
