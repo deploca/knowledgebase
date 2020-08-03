@@ -1,0 +1,28 @@
+on:
+  release:
+    types: [created]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build projects and deploy them to deploca.com
+    steps:
+      - name: Checkout Action
+        uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.5.0
+        with:
+          dotnet-version: 3.1.x
+      - name: Publish sample repository
+        run: |
+          chmod +x publish.sh
+          ./publish.sh
+      - name: Upload action
+        uses: deploca/deploca-upload-action@0.1.0
+        id: uploader
+        with:
+          path: _publish
+          target: knowledgebase/development
+      # Use the output from the `hello` step
+      - name: Get the output result
+        run: echo "The result is ${{ steps.uploader.outputs.result }}"
