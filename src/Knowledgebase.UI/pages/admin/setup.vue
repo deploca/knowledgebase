@@ -5,7 +5,14 @@
         <h3>{{$t('common.app-name')}}<br /><small>{{$t('views.admin.setup')}}</small></h3>
         <hr />
       </div>
-      <b-form @submit="onSubmit">
+      <div class="text-center" v-if="$auth.loggedIn == false">
+        <p>
+          This application uses Auth0 for User Accounts Management.
+          Before installation, you should login or create an account to countinue.
+        </p>
+        <b-button @click="login()">Login or Create an account</b-button>
+      </div>
+      <b-form @submit="onSubmit" v-else>
         <b-form-group :label="$t('views.admin.language')"
                       label-cols-sm="4"
                       label-cols-lg="3">
@@ -23,7 +30,7 @@
                       :description="$t('views.admin.admin-email-desc')"
                       label-cols-sm="4"
                       label-cols-lg="3">
-          <b-form-input :value="`${$store.state.auth.user.name} (${$store.state.auth.user.email})`"
+          <b-form-input :value="`${currentUser.name} (${currentUser.email})`"
                         disabled />
         </b-form-group>
 
@@ -62,6 +69,9 @@
       ...mapGetters({
         locales: 'locales'
       }),
+      currentUser() {
+        return this.$store.state.auth.user ? this.$store.state.auth.user : {}
+      },
       uiLocales() {
         return this.locales.map(x => ({ value: x.code, text: x.name }))
       }
@@ -75,11 +85,6 @@
       }
     }),
     mounted() {
-      // login or create a user for the creator of the application
-      if (this.$auth.loggedIn == false) {
-        this.$auth.loginWith('auth0')
-      }
-
       this.model.locale = this.$store.state.locale
     },
     methods: {
@@ -94,6 +99,9 @@
       onLocaleChange(value) {
         this.$store.commit('SET_LANG', value)
         this.$i18n.locale = value
+      },
+      login() {
+        this.$auth.login()
       }
     }
   }

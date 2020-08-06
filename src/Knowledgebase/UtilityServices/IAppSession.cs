@@ -10,5 +10,6 @@ namespace Knowledgebase.UtilityServices
         void SetAuthenticatedUserId(Guid id);
         void EnsureAuthenticated();
         //void EnsurePermissions(params string[] permissions);
+        Models.CurrentUserInfo GetCurrentUserInfo();
     }
 }

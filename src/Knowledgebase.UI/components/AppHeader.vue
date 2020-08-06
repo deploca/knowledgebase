@@ -39,7 +39,7 @@
     },
     methods: {
       login() {
-        this.$auth.loginWith('auth0')
+        this.$auth.login()
       },
       logout() {
         this.$auth.logout()

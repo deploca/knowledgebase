@@ -1,12 +1,16 @@
 
+export const clientAppBaseUrl = (process.env.NODE_ENV == 'development' ? 'http://localhost:3000' : '');
+export const apiServerBaseUrl = (process.env.NODE_ENV == 'development' ? '//localhost:58979' : '');
+
 export default ({ app, $axios }, inject) => {
   const api = $axios.create()
-  api.setBaseURL((process.env.NODE_ENV == 'development' ? '//localhost:58979' : '') + '/api/');
+  api.setBaseURL(apiServerBaseUrl + '/api/');
+  api.defaults.withCredentials = true;
 
   // add logged-in user access token to the request
   api.interceptors.request.use(config => {
-    if (app.$auth && app.$auth.loggedIn)
-      config.headers['common']['Authorization'] = app.$auth.$storage.getState('_token.auth0');
+    //if (app.$auth && app.$auth.loggedIn)
+    //  config.headers['common']['Authorization'] = app.$auth.$storage.getState('_token.auth0');
     return config;
   }, err => {
     return Promise.reject(err);

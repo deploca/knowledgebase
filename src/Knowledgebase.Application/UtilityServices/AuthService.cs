@@ -30,18 +30,18 @@ namespace Knowledgebase.UtilityServices
             if (!string.IsNullOrWhiteSpace(_client_access_token) && !regenerate_if_exists)
                 return;
 
-            if (!string.IsNullOrWhiteSpace(_options.Management_TestingClientAccessToken))
+            if (!string.IsNullOrWhiteSpace(_options.TestingClientAccessToken))
             {
-                _client_access_token = _options.Management_TestingClientAccessToken;
+                _client_access_token = _options.TestingClientAccessToken;
             }
             else
             {
                 var client = new AuthenticationApiClient(_options.ServerRootUrl);
                 var tokenResponse = await client.GetTokenAsync(new ClientCredentialsTokenRequest
                 {
-                    ClientId = _options.Management_ClientId,
-                    ClientSecret = _options.Management_ClientSecret,
-                    Audience = _options.Management_Identifier
+                    ClientId = _options.ClientId,
+                    ClientSecret = _options.ClientSecret,
+                    Audience = _options.ApiIdentifier
                 });
                 _client_access_token = tokenResponse.AccessToken;
             }

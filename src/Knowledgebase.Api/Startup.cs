@@ -5,13 +5,16 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Knowledgebase.Api
 {
@@ -46,9 +49,13 @@ namespace Knowledgebase.Api
                 });
             }
 
+            if (env.IsDevelopment())
+            {
+                services.AddCors();
+            }
+
             // asp.net
             services.AddHttpContextAccessor();
-            services.AddCors();
             services.AddControllers()
                 .AddMvcOptions(options =>
                 {
@@ -62,18 +69,26 @@ namespace Knowledgebase.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseCors(o => o
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    //.AllowAnyOrigin()
+                    .WithOrigins("http://localhost:3000")
+                    .AllowCredentials()
+                    .Build());
+            }
+            else
+            {
+                app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
+            app.UseCookiePolicy();
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors(o => o
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .Build());
 
             app.UseEndpoints(endpoints =>
             {
@@ -121,13 +136,10 @@ namespace Knowledgebase.Api
             // load configuration from env or appsettings
             var authOptions = Configuration.GetSection("Auth").Get<UtilityServices.AuthOptions>();
             authOptions.ServerRootUrl = Environment.GetEnvironmentVariable("Auth_ServerRootUrl") ?? authOptions.ServerRootUrl;
-            authOptions.Management_ClientId = Environment.GetEnvironmentVariable("Auth_Management_ClientId") ?? authOptions.Management_ClientId;
-            authOptions.Management_ClientSecret = Environment.GetEnvironmentVariable("Auth_Management_ClientSecret") ?? authOptions.Management_ClientSecret;
-            authOptions.Management_Identifier = Environment.GetEnvironmentVariable("Auth_Management_Identifier") ?? authOptions.Management_Identifier;
-            authOptions.Management_TestingClientAccessToken = Environment.GetEnvironmentVariable("Auth_Management_TestingClientAccessToken") ?? authOptions.Management_TestingClientAccessToken;
-            authOptions.UiApp_ClientId = Environment.GetEnvironmentVariable("Auth_UiApp_ClientId") ?? authOptions.UiApp_ClientId;
-            authOptions.UiApp_ClientSecret = Environment.GetEnvironmentVariable("Auth_UiApp_ClientSecret") ?? authOptions.UiApp_ClientSecret;
-            authOptions.UiApp_Identifier = Environment.GetEnvironmentVariable("Auth_UiApp_Identifier") ?? authOptions.UiApp_Identifier;
+            authOptions.ClientId = Environment.GetEnvironmentVariable("Auth_ClientId") ?? authOptions.ClientId;
+            authOptions.ClientSecret = Environment.GetEnvironmentVariable("Auth_ClientSecret") ?? authOptions.ClientSecret;
+            authOptions.ApiIdentifier = Environment.GetEnvironmentVariable("Auth_ApiIdentifier") ?? authOptions.ApiIdentifier;
+            authOptions.TestingClientAccessToken = Environment.GetEnvironmentVariable("Auth_TestingClientAccessToken") ?? authOptions.TestingClientAccessToken;
 
             // register auth core
             services.AddSingleton(authOptions);
@@ -136,20 +148,87 @@ namespace Knowledgebase.Api
                 Auth0.ManagementApi.HttpClientManagementConnection>();
             services.AddSingleton<UtilityServices.AuthService>();
 
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None;
+            });
+
             // add aspnet auth
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddOpenIdConnect("Auth0", options =>
             {
+                //var appRootPath = env.IsProduction() ? "https://" + Environment.GetEnvironmentVariable("DEPLOCA_SERVICEURL_ui-and-api") : "";
                 options.Authority = (!authOptions.ServerRootUrl.StartsWith("https") ? "https://" : "") + authOptions.ServerRootUrl;
-                options.Audience = authOptions.UiApp_Identifier;
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.ClientId = authOptions.ClientId;
+                options.ClientSecret = authOptions.ClientSecret;
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                options.Scope.Add("openid profile email");
+                options.CallbackPath = "/auth/signin-callback";
+                options.ClaimsIssuer = "Auth0";
+                options.Events = new OpenIdConnectEvents
                 {
-                    NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.SetParameter("audience", authOptions.ApiIdentifier);
+                        return Task.FromResult(0);
+                    },
+                    // handle the logout redirection
+                    OnRedirectToIdentityProviderForSignOut = (context) =>
+                    {
+                        var logoutUri = $"https://{authOptions.ServerRootUrl}/v2/logout?client_id={authOptions.ClientId}";
+
+                        var postLogoutUri = context.Properties.RedirectUri;
+                        if (!string.IsNullOrEmpty(postLogoutUri))
+                        {
+                            if (postLogoutUri.StartsWith("/"))
+                            {
+                                // transform to absolute
+                                var request = context.Request;
+                                postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                            }
+                            logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
+                        }
+
+                        context.Response.Redirect(logoutUri);
+                        context.HandleResponse();
+
+                        return Task.CompletedTask;
+                    },
+                };
+            }).AddCookie(options =>
+            {
+                options.LoginPath = "/auth/login";
+                options.LogoutPath = "/auth/logout";
+                options.Events = new CookieAuthenticationEvents
+                {
+                    // Prevent redirect to login page for ajax calls to apis
+                    OnRedirectToLogin = context =>
+                    {
+                        if (context.Request.Path.Value.StartsWith("/api"))
+                        {
+                            context.Response.StatusCode = 401;
+                            return Task.FromResult(0);
+                        }
+                        context.Response.Redirect(context.RedirectUri);
+                        return Task.FromResult(0);
+                    },
                 };
             });
+            //.AddJwtBearer(options =>
+            //{
+            //    options.Authority = (!authOptions.ServerRootUrl.StartsWith("https") ? "https://" : "") + authOptions.ServerRootUrl;
+            //    options.Audience = authOptions.UiApp_Identifier;
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        NameClaimType = System.Security.Claims.ClaimTypes.NameIdentifier
+            //    };
+            //});
         }
     }
 }

@@ -5,7 +5,6 @@ export default {
   target: 'static',
   head: {
     title: 'Knowledgebase',
-    //htmlAttrs: { 'lang': 'fa', 'dir': 'rtl' },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -57,16 +56,10 @@ export default {
     bootstrapVueCSS: false // Or `bvCSS: false`
   },
   auth: {
-    redirect: {
-      login: '/', // redirect user when not connected
-      callback: '/signedin'
-    },
     strategies: {
       local: false,
-      auth0: {
-        domain: process.env.AUTH0_DOMAIN,
-        client_id: process.env.AUTH0_CLIENT_ID,
-        audience: process.env.AUTH0_AUDIENCE
+      appAuthStrategy: {
+        _scheme: '~/plugins/appAuthScheme',
       }
     }
   },

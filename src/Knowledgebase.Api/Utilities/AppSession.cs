@@ -62,6 +62,20 @@ namespace Knowledgebase.Api.Utilities
                 throw new Exceptions.UnauthorizedException();
         }
 
+        public Models.CurrentUserInfo GetCurrentUserInfo()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+            return new Models.CurrentUserInfo
+            {
+                Identifier = user.FindFirstValue(ClaimTypes.NameIdentifier),
+                Email = user.FindFirstValue(ClaimTypes.Email),
+                Name = user.FindFirstValue("name"),
+                NickName = user.FindFirstValue("nickname"),
+                Picture = user.FindFirstValue("picture"),
+                Locale = user.FindFirstValue("locale"),
+            };
+        }
+
         //public void EnsurePermissions(params string[] permissions)
         //{
         //    var rawUserPermissions = _httpContextAccessor.HttpContext.User.FindFirstValue("permission");
